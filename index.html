@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#003366">
+<title>RC-21 · Trabajo en Altura · Antamina</title>
+<style>
+  :root {
+    --azul: #003366; --azul-medio: #1a4d8f; --naranja: #E05C00;
+    --naranja-light: #FF7A1A; --verde: #1a7a3c; --rojo: #c0392b;
+    --gris-bg: #f0f2f5; --gris-borde: #d0d7e2;
+    --texto: #1a1f2e; --texto-suave: #5a6378;
+    --fuente: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--fuente); background: var(--gris-bg); color: var(--texto); min-height: 100vh; padding-bottom: 3rem; }
+
+  header { background: var(--azul); color: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .header-top { display: flex; align-items: center; gap: 12px; padding: 14px 16px 10px; }
+  .logo-badge { background: var(--naranja); color: white; font-weight: 900; font-size: 11px; padding: 6px 10px; border-radius: 6px; letter-spacing: 0.5px; white-space: nowrap; }
+  .header-title { flex: 1; }
+  .header-title h1 { font-size: 15px; font-weight: 700; line-height: 1.2; }
+  .header-title p { font-size: 11px; opacity: 0.75; margin-top: 2px; }
+  .sync-indicator { width: 10px; height: 10px; border-radius: 50%; background: #666; flex-shrink: 0; transition: background 0.3s; }
+  .sync-indicator.online { background: #4ade80; }
+  .sync-indicator.offline { background: #f87171; }
+  .progress-bar-wrap { background: rgba(255,255,255,0.15); height: 4px; }
+  .progress-bar-fill { height: 4px; background: var(--naranja-light); transition: width 0.4s ease; width: 0%; }
+
+  .offline-banner { background: #fef3c7; border-bottom: 2px solid #f59e0b; color: #78350f; font-size: 12px; font-weight: 600; padding: 7px 14px; text-align: center; display: none; }
+  .offline-banner.visible { display: block; }
+
+  .form-header { background: white; padding: 16px; border-bottom: 2px solid var(--gris-borde); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .form-header label { font-size: 11px; font-weight: 600; color: var(--texto-suave); text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 4px; }
+  .form-header input { width: 100%; padding: 8px 10px; border: 1.5px solid var(--gris-borde); border-radius: 6px; font-size: 13px; font-family: var(--fuente); background: var(--gris-bg); color: var(--texto); }
+  .form-header input:focus { outline: none; border-color: var(--azul-medio); background: white; }
+
+  .seccion { margin: 12px 12px 0; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .seccion-header { padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+  .critico .seccion-header { background: var(--azul); color: white; }
+  .preventivo .seccion-header { background: var(--azul-medio); color: white; }
+  .seccion-titulo { font-size: 13px; font-weight: 700; flex: 1; line-height: 1.3; }
+  .seccion-badge { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+  .critico .seccion-badge { background: var(--naranja); color: white; }
+  .preventivo .seccion-badge { background: #2563eb; color: white; }
+  .chevron { font-size: 16px; transition: transform 0.2s; opacity: 0.8; }
+  .chevron.abierto { transform: rotate(180deg); }
+
+  .preguntas-wrap { background: white; display: none; }
+  .preguntas-wrap.abierto { display: block; }
+
+  .pregunta-item { padding: 14px 14px 12px; border-bottom: 1px solid var(--gris-borde); }
+  .pregunta-item:last-child { border-bottom: none; }
+  .pregunta-num { font-size: 10px; font-weight: 700; color: var(--naranja); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+  .pregunta-texto { font-size: 13px; line-height: 1.55; color: var(--texto); margin-bottom: 10px; }
+
+  .opciones { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .opcion-btn { padding: 9px 6px; border: 2px solid var(--gris-borde); border-radius: 8px; background: white; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; text-align: center; font-family: var(--fuente); color: var(--texto-suave); }
+  .opcion-btn:active { transform: scale(0.96); }
+  .opcion-btn.si.activo { background: #d1fae5; border-color: var(--verde); color: var(--verde); }
+  .opcion-btn.no.activo { background: #fee2e2; border-color: var(--rojo); color: var(--rojo); }
+  .opcion-btn.na.activo { background: #fef9c3; border-color: #ca8a04; color: #854d0e; }
+
+  .obs-input { display: none; width: 100%; margin-top: 8px; padding: 8px 10px; border: 1.5px solid var(--rojo); border-radius: 6px; font-size: 12px; font-family: var(--fuente); color: var(--texto); resize: vertical; min-height: 52px; }
+  .obs-input.visible { display: block; }
+  .obs-input:focus { outline: none; border-color: var(--naranja); }
+
+  /* FOTO */
+  .foto-zona { margin-top: 10px; }
+  .foto-label { font-size: 11px; font-weight: 600; color: var(--texto-suave); margin-bottom: 5px; display: block; }
+  .foto-btn-wrap { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .foto-input { display: none; }
+  .foto-btn { padding: 7px 12px; border: 1.5px dashed var(--gris-borde); border-radius: 7px; background: var(--gris-bg); font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--fuente); color: var(--texto-suave); display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+  .foto-btn:active { transform: scale(0.96); }
+  .foto-preview-wrap { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .foto-thumb { position: relative; width: 64px; height: 64px; border-radius: 7px; overflow: hidden; border: 2px solid var(--gris-borde); flex-shrink: 0; }
+  .foto-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .foto-thumb-del { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.65); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+  .foto-upload-status { font-size: 10px; font-weight: 600; margin-top: 3px; }
+  .foto-upload-status.subiendo { color: var(--azul-medio); }
+  .foto-upload-status.ok { color: var(--verde); }
+  .foto-upload-status.pendiente { color: #ca8a04; }
+  .foto-upload-status.error { color: var(--rojo); }
+
+  /* RESUMEN */
+  .resumen-barra { margin: 12px; background: white; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .resumen-titulo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texto-suave); margin-bottom: 10px; }
+  .resumen-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 900; display: block; line-height: 1; }
+  .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; display: block; }
+  .stat-total .stat-num { color: var(--azul); }
+  .stat-si .stat-num { color: var(--verde); }
+  .stat-no .stat-num { color: var(--rojo); }
+  .stat-pend .stat-num { color: var(--texto-suave); }
+  .stat-na .stat-num { color: #ca8a04; }
+
+  /* ACCIONES */
+  .acciones { margin: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-accion { padding: 14px 10px; border-radius: 10px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--fuente); display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity 0.15s, transform 0.1s; }
+  .btn-accion:active { transform: scale(0.97); }
+  .btn-guardar { background: var(--azul); color: white; }
+  .btn-exportar { background: var(--naranja); color: white; }
+  .btn-compartir { background: #25D366; color: white; grid-column: 1 / -1; }
+  .btn-nuevo { background: white; color: var(--texto); border: 2px solid var(--gris-borde); grid-column: 1 / -1; }
+
+  /* CONFIG SHEET */
+  .config-sheet { margin: 12px; background: #eff6ff; border: 1.5px solid #93c5fd; border-radius: 10px; padding: 14px; }
+  .config-sheet-titulo { font-size: 12px; font-weight: 800; color: var(--azul); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .config-sheet label { font-size: 11px; font-weight: 600; color: var(--texto-suave); display: block; margin-bottom: 3px; margin-top: 8px; }
+  .config-sheet input { width: 100%; padding: 8px 10px; border: 1.5px solid #93c5fd; border-radius: 6px; font-size: 12px; font-family: var(--fuente); background: white; color: var(--texto); }
+  .config-sheet input:focus { outline: none; border-color: var(--azul); }
+  .config-guardar-btn { margin-top: 10px; width: 100%; padding: 10px; background: var(--azul); color: white; border: none; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--fuente); }
+  .config-estado { font-size: 11px; margin-top: 6px; text-align: center; font-weight: 600; }
+  .config-toggle { font-size: 11px; color: var(--azul-medio); text-decoration: underline; cursor: pointer; margin-left: auto; font-weight: 600; }
+
+  /* HISTORIAL */
+  .historial-sec { margin: 12px; }
+  .historial-titulo { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texto-suave); margin-bottom: 8px; }
+  .historial-card { background: white; border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); display: flex; align-items: center; gap: 10px; }
+  .hist-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .hist-dot.ok { background: var(--verde); }
+  .hist-dot.parcial { background: var(--naranja); }
+  .hist-dot.con-no { background: var(--rojo); }
+  .hist-info { flex: 1; min-width: 0; }
+  .hist-fecha { font-size: 12px; font-weight: 600; color: var(--texto); }
+  .hist-meta { font-size: 11px; color: var(--texto-suave); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hist-btn { font-size: 11px; padding: 5px 10px; border-radius: 5px; border: 1.5px solid var(--gris-borde); background: white; cursor: pointer; font-family: var(--fuente); font-weight: 600; color: var(--texto-suave); white-space: nowrap; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1f2e; color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; z-index: 999; transition: transform 0.3s ease; white-space: nowrap; max-width: 90vw; text-align: center; }
+  .toast.visible { transform: translateX(-50%) translateY(0); }
+  .toast.verde { border-left: 4px solid #4ade80; }
+  .toast.rojo { border-left: 4px solid #f87171; }
+
+  /* MODAL FOTO GRANDE */
+  .foto-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 500; align-items: center; justify-content: center; }
+  .foto-modal.visible { display: flex; }
+  .foto-modal img { max-width: 95vw; max-height: 90vh; border-radius: 8px; object-fit: contain; }
+  .foto-modal-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.15); color: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  @media (min-width: 500px) {
+    .seccion, .resumen-barra, .acciones, .historial-sec, .config-sheet { max-width: 480px; margin-left: auto; margin-right: auto; }
+    .form-header { max-width: 480px; margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo-badge">RC‑21</div>
+    <div class="header-title">
+      <h1>Trabajo en Altura</h1>
+      <p>COR_Accidente · v.08 · ASIP Antamina</p>
+    </div>
+    <div class="sync-indicator" id="syncDot" title="Estado de conexión"></div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+</header>
+
+<div class="offline-banner" id="offlineBanner">
+  📵 Sin conexión — datos y fotos se guardan localmente y sincronizarán al reconectarse
+</div>
+
+<!-- DATOS DEL INSPECTOR -->
+<div class="form-header">
+  <div><label>Inspector / Supervisor</label><input type="text" id="inspector" placeholder="Nombre completo"></div>
+  <div><label>Empresa / Área</label><input type="text" id="empresa" placeholder="Contratista o área"></div>
+  <div><label>Ubicación / Frente</label><input type="text" id="ubicacion" placeholder="Ej: Nivel 4450, Estructura A"></div>
+  <div><label>Fecha y Hora</label><input type="datetime-local" id="fechaHora"></div>
+</div>
+
+<!-- CONTROLES -->
+<div id="controlesContainer"></div>
+
+<!-- RESUMEN -->
+<div class="resumen-barra">
+  <div class="resumen-titulo">Resumen de verificación</div>
+  <div class="resumen-stats">
+    <div class="stat-item stat-total"><span class="stat-num" id="statTotal">0</span><span class="stat-label">Total</span></div>
+    <div class="stat-item stat-si"><span class="stat-num" id="statSi">0</span><span class="stat-label">✓ Cumple</span></div>
+    <div class="stat-item stat-no"><span class="stat-num" id="statNo">0</span><span class="stat-label">✗ No cumple</span></div>
+    <div class="stat-item stat-pend"><span class="stat-num" id="statPend">0</span><span class="stat-label">Pendiente</span></div>
+    <div class="stat-item stat-na"><span class="stat-num" id="statNa">0</span><span class="stat-label">N/A</span></div>
+  </div>
+</div>
+
+<!-- BOTONES -->
+<div class="acciones">
+  <button class="btn-accion btn-guardar" onclick="guardarChecklist()">💾 Guardar</button>
+  <button class="btn-accion btn-exportar" onclick="exportarCSV()">📤 Exportar CSV</button>
+  <button class="btn-accion btn-compartir" onclick="compartirCSV()">📲 Compartir (WhatsApp / Otros)</button>
+  <button class="btn-accion btn-nuevo" onclick="nuevoChecklist()">＋ Nueva verificación</button>
+</div>
+
+<!-- CONFIG GOOGLE SHEETS -->
+<div class="config-sheet" id="configPanel">
+  <div class="config-sheet-titulo">
+    ☁️ Conexión Google Sheets + Drive
+    <span class="config-toggle" onclick="toggleConfig()">ocultar</span>
+  </div>
+  <div id="configBody">
+    <label>URL del Web App Script (Google Apps Script)</label>
+    <input type="url" id="sheetUrl" placeholder="https://script.google.com/macros/s/XXXXX/exec">
+    <label>ID de carpeta Google Drive (para fotos)</label>
+    <input type="text" id="driveFolder" placeholder="ID de la carpeta (de la URL de Drive)">
+    <button class="config-guardar-btn" onclick="guardarConfig()">Guardar configuración</button>
+    <div class="config-estado" id="configEstado"></div>
+    <div style="margin-top:10px; padding:10px; background:#dbeafe; border-radius:7px; font-size:11px; line-height:1.6; color:#1e3a5f;">
+      <strong>📋 Instrucciones rápidas:</strong><br>
+      1. Abre <strong>script.google.com</strong> con tu cuenta Google<br>
+      2. Crea un proyecto nuevo y pega el script que te di<br>
+      3. Clic en <strong>Implementar → Nueva implementación → Aplicación web</strong><br>
+      4. Acceso: <strong>Cualquier usuario</strong> → Implementar → copia la URL<br>
+      5. Pega la URL arriba y el ID de tu carpeta Drive
+    </div>
+  </div>
+</div>
+
+<!-- HISTORIAL -->
+<div class="historial-sec">
+  <div class="historial-titulo">Historial local</div>
+  <div id="historialLista"></div>
+</div>
+
+<!-- MODAL FOTO -->
+<div class="foto-modal" id="fotoModal" onclick="cerrarModal()">
+  <button class="foto-modal-close" onclick="cerrarModal()">✕</button>
+  <img id="fotoModalImg" src="" alt="Evidencia">
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CONTROLES = [
+  { tipo:'critico', nombre:'Personal competente y autorizado para trabajo en altura', preguntas:[
+    'Solicite a cada trabajador en altura su credencial: ¿Cuenta con aptitud médica vigente (examen ocupacional anual con evaluación de suficiencia médica para altura) y, en el caso del andamiero, certificación vigente ≤24 meses emitida por el representante del fabricante del andamio?',
+    'Pregunte al trabajador: ¿Cómo se siente hoy para trabajar en altura? ¿Tiene algún síntoma de fatiga, malestar, vértigo o mareo? ¿Sabe a quién reportar si durante la tarea se siente sin condiciones?'
+  ]},
+  { tipo:'critico', nombre:'Plan de rescate ante trauma de suspensión (≤10 min ICMM)', preguntas:[
+    'Muéstreme el plan de rescate específico documentado en el PETAR para esta tarea: ¿Identifica brigada activa del turno, kit de rescate disponible en zona (ubicación verificada), tiempo objetivo de respuesta ≤10 min, y frecuencia de radio operativa con el Centro de Control?',
+    'Pregunte a los trabajadores: ¿Cuál es el protocolo ante caída con suspensión de su compañero? ¿Existe evidencia de simulacro de rescate ejecutado en los últimos 6 meses con tiempo real medido y dentro de la meta ≤10 min?'
+  ]},
+  { tipo:'critico', nombre:'Plataformas, superficies de trabajo y sistemas de andamiaje aprobados', preguntas:[
+    '¿La plataforma, andamio o equipo elevador en uso cuenta con permiso de montaje y uso vigente para el turno, con baranda ≥1.20 m íntegra en el 100% del perímetro, travesaño intermedio y rodapié ≥10 cm? Muéstreme el permiso y la tarjeta verde de habilitación.',
+    'Pida al trabajador que ejecute en su presencia la inspección pre-uso de la plataforma/andamio y describa qué hace si detecta un defecto. ¿Demuestra conocimiento del procedimiento "Fuera de Servicio" (etiquetado + no usar + reporte)?'
+  ]},
+  { tipo:'critico', nombre:'Protección colectiva instalada en bordes abiertos y aberturas', preguntas:[
+    '¿Existe restricción efectiva (barricada dura, no cinta de señalización) a 1.80 m del borde en el 100% del perímetro de la zona de trabajo, y todas las aberturas en piso están cubiertas con tapa resistente etiquetada "No retirar"?',
+    'Si una baranda o cubierta debe retirarse para ejecutar la tarea, ¿qué protocolo aplica? Verifique en campo: ¿hay barrera dura instalada y registrada en el Permiso, y se confirma la reposición al cierre del turno?'
+  ]},
+  { tipo:'critico', nombre:'Segregación y control de acceso en zona de trabajo en altura y en zona de exclusión inferior (drop zone)', preguntas:[
+    'Recorra el perímetro superior (zona de trabajo) y el perímetro inferior (drop zone): ¿Ambos están delimitados con barrera dura, señalización "Peligro - Trabajo en Altura" arriba y "Caída de Objetos - No Transitar / Zona de Exclusión" abajo, con radio inferior dimensionado según cálculo de deflexión documentado en el PETAR (referencia: hasta 2× la altura de caída) y una autoridad de zona nominada por nombre en el Permiso para cada perímetro?',
+    'Permanezca 10 minutos en el perímetro inferior (drop zone): ¿Existe vigilante activo controlando el acceso, todo el personal y vehículos respetan el perímetro, y las herramientas/equipos en altura cuentan con sistema de retención secundaria (redes, cubiertas) que evita objetos caídos sobre la zona?'
+  ]},
+  { tipo:'critico', nombre:'Sistema de restricción y detención de caídas certificado (arnés + anclaje + 100% tie off)', preguntas:[
+    'Muéstreme el arnés y línea de vida que está usando. ¿Tiene etiqueta de color cuatrimestral vigente (Rojo: Ene-Abr / Azul: May-Ago / Amarillo: Set-Dic), mosquetones de doble seguro funcionales, cinta anti trauma instalada, y el anclaje certificado ≥22.7 kN (2,270 kgf) identificado en el Permiso?',
+    'Solicite al trabajador que demuestre el principio de 100% tie-off durante un desplazamiento simulado y que explique cómo se calcula la distancia segura de caída para su tarea. ¿Aplica correctamente la doble línea de vida sin desconexión en ningún momento?'
+  ]},
+  { tipo:'preventivo', nombre:'Permiso de trabajo en altura (PETAR) con verificación en campo', preguntas:[
+    'Muéstreme el PETAR vigente para esta tarea: ¿está firmado por Supervisor autorizado, vigente para este turno, con verificación física en campo de los 7 controles críticos (lista de chequeo binaria) y plan de rescate específico documentado?',
+    'Identifique si aplica un cambio de condición ocurrido desde la emisión del PETAR (cambio de clima, alcance, integrante de cuadrilla, herramienta o método). Pida al Supervisor que muestre cómo quedó documentado ese cambio en el Permiso. ¿El PETAR refleja la condición actual o la condición inicial?'
+  ]}
+];
+
+let respuestas = {};
+let fotos = {}; // key -> [{dataUrl, nombre, driveUrl, estado}]
+const STORAGE_KEY = 'rc21_historial';
+const CONFIG_KEY  = 'rc21_config';
+
+// ── CONFIG ────────────────────────────────────────────────────────────────
+function cargarConfig() {
+  const cfg = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+  if (cfg.sheetUrl)    document.getElementById('sheetUrl').value    = cfg.sheetUrl;
+  if (cfg.driveFolder) document.getElementById('driveFolder').value = cfg.driveFolder;
+  return cfg;
+}
+function guardarConfig() {
+  const cfg = { sheetUrl: document.getElementById('sheetUrl').value.trim(), driveFolder: document.getElementById('driveFolder').value.trim() };
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg));
+  const el = document.getElementById('configEstado');
+  el.textContent = cfg.sheetUrl ? '✅ Configuración guardada' : '⚠️ Ingresa la URL del script';
+  el.style.color = cfg.sheetUrl ? 'var(--verde)' : 'var(--rojo)';
+}
+function toggleConfig() {
+  const body = document.getElementById('configBody');
+  const btn  = document.querySelector('.config-toggle');
+  const oculto = body.style.display === 'none';
+  body.style.display = oculto ? 'block' : 'none';
+  btn.textContent = oculto ? 'ocultar' : 'configurar';
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+function renderControles() {
+  const container = document.getElementById('controlesContainer');
+  container.innerHTML = '';
+  const criticos   = CONTROLES.filter(c => c.tipo === 'critico');
+  const preventivos= CONTROLES.filter(c => c.tipo === 'preventivo');
+  container.innerHTML += `<div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#E05C00;">● Controles Críticos</div>`;
+  criticos.forEach((ctrl, ci) => renderControl(container, ctrl, ci));
+  container.innerHTML += `<div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#1a4d8f;">● Controles Preventivos</div>`;
+  preventivos.forEach((ctrl, pi) => renderControl(container, ctrl, pi + criticos.length));
+}
+
+function renderControl(container, ctrl, idx) {
+  const sec = document.createElement('div');
+  sec.className = `seccion ${ctrl.tipo}`;
+  const header = document.createElement('div');
+  header.className = 'seccion-header';
+  header.innerHTML = `<span class="seccion-badge">${ctrl.tipo==='critico'?'CRÍTICO':'PREVENTIVO'}</span><span class="seccion-titulo">${ctrl.nombre}</span><span class="chevron" id="chev-${idx}">▾</span>`;
+  header.onclick = () => toggleControl(idx);
+  const wrap = document.createElement('div');
+  wrap.className = 'preguntas-wrap abierto';
+  wrap.id = `wrap-${idx}`;
+
+  ctrl.preguntas.forEach((preg, pi) => {
+    const key = `${idx}-${pi}`;
+    const r   = respuestas[key] || {};
+    const ff  = fotos[key]      || [];
+    const item = document.createElement('div');
+    item.className = 'pregunta-item';
+    item.innerHTML = `
+      <div class="pregunta-num">Subcontrol ${pi+1}</div>
+      <div class="pregunta-texto">${preg}</div>
+      <div class="opciones">
+        <button class="opcion-btn si ${r.resp==='SI'?'activo':''}" onclick="responder('${key}','SI',this)">✓ Cumple</button>
+        <button class="opcion-btn no ${r.resp==='NO'?'activo':''}" onclick="responder('${key}','NO',this)">✗ No cumple</button>
+        <button class="opcion-btn na ${r.resp==='NA'?'activo':''}" onclick="responder('${key}','NA',this)">N/A</button>
+      </div>
+      <textarea class="obs-input ${r.resp==='NO'?'visible':''}" id="obs-${key}"
+        placeholder="Descripción de la no conformidad / acción correctiva..."
+        onchange="guardarObs('${key}',this.value)">${r.obs||''}</textarea>
+      <div class="foto-zona">
+        <span class="foto-label">📷 Foto de evidencia</span>
+        <div class="foto-btn-wrap">
+          <label class="foto-btn" for="fotoFile-${key}">📷 Cámara</label>
+          <input class="foto-input" type="file" id="fotoFile-${key}" accept="image/*" capture="environment" onchange="agregarFoto('${key}',this)">
+          <label class="foto-btn" for="fotoGal-${key}">🖼 Galería</label>
+          <input class="foto-input" type="file" id="fotoGal-${key}" accept="image/*" onchange="agregarFoto('${key}',this)">
+        </div>
+        <div class="foto-preview-wrap" id="fotos-${key}"></div>
+      </div>`;
+    wrap.appendChild(item);
+  });
+
+  sec.appendChild(header);
+  sec.appendChild(wrap);
+  container.appendChild(sec);
+
+  // Renderizar fotos ya guardadas
+  ctrl.preguntas.forEach((_, pi) => {
+    const key = `${idx}-${pi}`;
+    (fotos[key]||[]).forEach((f,fi) => renderThumb(key, fi));
+  });
+}
+
+function toggleControl(idx) {
+  const wrap = document.getElementById(`wrap-${idx}`);
+  const chev = document.getElementById(`chev-${idx}`);
+  wrap.classList.toggle('abierto');
+  chev.classList.toggle('abierto');
+}
+
+// ── RESPONDER ─────────────────────────────────────────────────────────────
+function responder(key, valor, btn) {
+  const yaActivo = btn.classList.contains('activo');
+  btn.parentElement.querySelectorAll('.opcion-btn').forEach(b => b.classList.remove('activo'));
+  if (!yaActivo) {
+    btn.classList.add('activo');
+    respuestas[key] = respuestas[key] || {};
+    respuestas[key].resp = valor;
+  } else {
+    if (respuestas[key]) delete respuestas[key].resp;
+  }
+  const obs = document.getElementById(`obs-${key}`);
+  if (obs) { obs.classList.toggle('visible', valor==='NO' && !yaActivo); }
+  actualizarStats();
+}
+function guardarObs(key, val) { respuestas[key] = respuestas[key]||{}; respuestas[key].obs = val; }
+
+// ── FOTOS ─────────────────────────────────────────────────────────────────
+function agregarFoto(key, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    fotos[key] = fotos[key] || [];
+    const idx = fotos[key].length;
+    fotos[key].push({ dataUrl: e.target.result, nombre: `RC21_${key}_${Date.now()}.jpg`, driveUrl: null, estado: 'pendiente' });
+    renderThumb(key, idx);
+    if (navigator.onLine) subirFoto(key, idx);
+    else setFotoStatus(key, idx, 'pendiente', '⏳ Se subirá al conectarse');
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function renderThumb(key, idx) {
+  const wrap = document.getElementById(`fotos-${key}`);
+  if (!wrap) return;
+  const f = (fotos[key]||[])[idx];
+  if (!f) return;
+  let thumb = document.getElementById(`thumb-${key}-${idx}`);
+  if (!thumb) {
+    thumb = document.createElement('div');
+    thumb.className = 'foto-thumb';
+    thumb.id = `thumb-${key}-${idx}`;
+    thumb.innerHTML = `<img src="${f.dataUrl}" onclick="abrirModal('${key}',${idx})">
+      <button class="foto-thumb-del" onclick="eliminarFoto('${key}',${idx})">✕</button>
+      <div class="foto-upload-status pendiente" id="fstatus-${key}-${idx}"></div>`;
+    wrap.appendChild(thumb);
+  } else {
+    thumb.querySelector('img').src = f.dataUrl;
+  }
+  setFotoStatus(key, idx, f.estado, f.estado==='ok'?'☁️ En Drive': f.estado==='subiendo'?'⬆️ Subiendo...': f.estado==='error'?'❌ Error al subir':'⏳ Pendiente');
+}
+
+function setFotoStatus(key, idx, estado, texto) {
+  if (fotos[key] && fotos[key][idx]) fotos[key][idx].estado = estado;
+  const el = document.getElementById(`fstatus-${key}-${idx}`);
+  if (el) { el.textContent = texto; el.className = `foto-upload-status ${estado}`; }
+}
+
+async function subirFoto(key, idx) {
+  const cfg = JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
+  if (!cfg.sheetUrl || !cfg.driveFolder) { setFotoStatus(key, idx, 'pendiente', '⏳ Sin config'); return; }
+  const f = (fotos[key]||[])[idx];
+  if (!f) return;
+  setFotoStatus(key, idx, 'subiendo', '⬆️ Subiendo...');
+  try {
+    const base64 = f.dataUrl.split(',')[1];
+    const resp = await fetch(cfg.sheetUrl, {
+      method: 'POST',
+      body: JSON.stringify({ accion:'subirFoto', nombre: f.nombre, base64, folderId: cfg.driveFolder })
+    });
+    const data = await resp.json();
+    if (data.url) {
+      fotos[key][idx].driveUrl = data.url;
+      setFotoStatus(key, idx, 'ok', '☁️ En Drive');
+    } else { setFotoStatus(key, idx, 'error', '❌ Error'); }
+  } catch(e) { setFotoStatus(key, idx, 'error', '❌ Sin conexión'); }
+}
+
+function eliminarFoto(key, idx) {
+  if (!confirm('¿Eliminar esta foto?')) return;
+  fotos[key].splice(idx, 1);
+  const wrap = document.getElementById(`fotos-${key}`);
+  if (wrap) wrap.innerHTML = '';
+  (fotos[key]||[]).forEach((_, i) => renderThumb(key, i));
+}
+
+function abrirModal(key, idx) {
+  const f = (fotos[key]||[])[idx];
+  if (!f) return;
+  document.getElementById('fotoModalImg').src = f.dataUrl;
+  document.getElementById('fotoModal').classList.add('visible');
+}
+function cerrarModal() { document.getElementById('fotoModal').classList.remove('visible'); }
+
+// ── STATS ─────────────────────────────────────────────────────────────────
+function actualizarStats() {
+  const vals = Object.values(respuestas);
+  const respondidas = vals.filter(r => r.resp).length;
+  const si   = vals.filter(r => r.resp==='SI').length;
+  const no   = vals.filter(r => r.resp==='NO').length;
+  const na   = vals.filter(r => r.resp==='NA').length;
+  const pend = totalPreguntas() - respondidas;
+  document.getElementById('statTotal').textContent = totalPreguntas();
+  document.getElementById('statSi').textContent    = si;
+  document.getElementById('statNo').textContent    = no;
+  document.getElementById('statPend').textContent  = pend < 0 ? 0 : pend;
+  document.getElementById('statNa').textContent    = na;
+  document.getElementById('progressBar').style.width = (respondidas/totalPreguntas()*100)+'%';
+}
+function totalPreguntas() { return CONTROLES.reduce((a,c) => a+c.preguntas.length, 0); }
+
+// ── GUARDAR LOCAL ─────────────────────────────────────────────────────────
+function guardarChecklist() {
+  const inspector = document.getElementById('inspector').value.trim();
+  if (!inspector) { mostrarToast('⚠️ Ingrese el nombre del inspector','rojo'); return; }
+  const registro = {
+    id: Date.now(),
+    fecha: document.getElementById('fechaHora').value || new Date().toISOString(),
+    inspector, empresa: document.getElementById('empresa').value,
+    ubicacion: document.getElementById('ubicacion').value,
+    respuestas: JSON.parse(JSON.stringify(respuestas)),
+    fotos: Object.fromEntries(Object.entries(fotos).map(([k,arr]) => [k, arr.map(f => ({nombre:f.nombre, driveUrl:f.driveUrl, estado:f.estado}))])),
+    sincronia: 'pendiente'
+  };
+  const hist = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+  hist.unshift(registro);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(hist));
+  if (navigator.onLine) enviarASheets(registro);
+  else mostrarToast('💾 Guardado localmente — sincronizará al conectarse','');
+  renderHistorial();
+}
+
+// ── ENVIAR A SHEETS ───────────────────────────────────────────────────────
+async function enviarASheets(registro) {
+  const cfg = JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
+  if (!cfg.sheetUrl) { mostrarToast('⚠️ Configura la URL del Script primero','rojo'); return; }
+  mostrarToast('☁️ Enviando a Google Sheets...','');
+  try {
+    const filas = [];
+    CONTROLES.forEach((ctrl,ci) => ctrl.preguntas.forEach((preg,pi) => {
+      const key = `${ci}-${pi}`;
+      const r = registro.respuestas[key]||{};
+      const fArr = (fotos[key]||[]).filter(f=>f.driveUrl).map(f=>f.driveUrl).join(' | ');
+      filas.push([registro.fecha, registro.inspector, registro.empresa, registro.ubicacion,
+        ctrl.tipo.toUpperCase(), ctrl.nombre, `Subcontrol ${pi+1}`, preg,
+        r.resp||'PENDIENTE', r.obs||'', fArr]);
+    }));
+    const resp = await fetch(cfg.sheetUrl, {
+      method:'POST',
+      body: JSON.stringify({ accion:'agregarFilas', filas })
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      const hist = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+      const reg  = hist.find(r=>r.id===registro.id);
+      if (reg) { reg.sincronia='sincronizado'; localStorage.setItem(STORAGE_KEY, JSON.stringify(hist)); }
+      mostrarToast('✅ Enviado a Google Sheets','verde');
+      renderHistorial();
+    } else { mostrarToast('❌ Error al enviar: '+data.error,'rojo'); }
+  } catch(e) { mostrarToast('❌ Error de red — guardado localmente','rojo'); }
+}
+
+// ── EXPORTAR CSV ──────────────────────────────────────────────────────────
+function construirCSV() {
+  const inspector = document.getElementById('inspector').value||'-';
+  const empresa   = document.getElementById('empresa').value||'-';
+  const ubicacion = document.getElementById('ubicacion').value||'-';
+  const fecha     = document.getElementById('fechaHora').value||new Date().toISOString().slice(0,16);
+  let csv = `RC-21 - Lista de Verificación - Trabajo en Altura\nInspector,${inspector}\nEmpresa/Área,${empresa}\nUbicación,${ubicacion}\nFecha/Hora,${fecha}\n\n`;
+  csv += 'N°,Tipo,Control,Subcontrol,Pregunta,Resultado,Observación,Fotos Drive\n';
+  let n=1;
+  CONTROLES.forEach((ctrl,ci) => ctrl.preguntas.forEach((preg,pi) => {
+    const key=`${ci}-${pi}`; const r=respuestas[key]||{};
+    const links=(fotos[key]||[]).filter(f=>f.driveUrl).map(f=>f.driveUrl).join(' | ');
+    csv+=`${n},${ctrl.tipo.toUpperCase()},"${ctrl.nombre.replace(/"/g,'""')}",Subcontrol ${pi+1},"${preg.replace(/"/g,'""')}",${r.resp||'PENDIENTE'},"${(r.obs||'').replace(/"/g,'""')}","${links}"\n`;
+    n++;
+  }));
+  return { csv, inspector, fecha };
+}
+
+function exportarCSV() {
+  const { csv, inspector, fecha } = construirCSV();
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`RC21_${inspector.replace(/ /g,'_')}_${fecha.slice(0,10)}.csv`; a.click();
+  mostrarToast('📥 CSV descargado','verde');
+}
+
+// ── COMPARTIR (WhatsApp / Cualquier app) ─────────────────────────────────
+async function compartirCSV() {
+  const { csv, inspector, fecha } = construirCSV();
+  const nombreArchivo = `RC21_${inspector.replace(/ /g,'_')||'verificacion'}_${fecha.slice(0,10)}.csv`;
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const file = new File([blob], nombreArchivo, {type:'text/csv'});
+  const textoResumen = `*RC-21 · Trabajo en Altura*\nInspector: ${inspector}\nFecha: ${fecha}`;
+
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: 'RC-21 Trabajo en Altura', text: textoResumen });
+      mostrarToast('📲 Compartido','verde');
+      return;
+    } catch(e) { if (e.name === 'AbortError') return; }
+  }
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'RC-21 Trabajo en Altura', text: textoResumen });
+      mostrarToast('📲 Compartido','verde');
+      return;
+    } catch(e) { if (e.name === 'AbortError') return; }
+  }
+  // Fallback: descarga CSV + abre WhatsApp con resumen en texto
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = nombreArchivo;
+  a.click();
+  window.open(`https://wa.me/?text=${encodeURIComponent(textoResumen + '\n(CSV descargado a tu carpeta de Descargas, adjúntalo manualmente)')}`, '_blank');
+  mostrarToast('📥 CSV descargado y WhatsApp abierto','verde');
+}
+
+// ── HISTORIAL ─────────────────────────────────────────────────────────────
+function renderHistorial() {
+  const lista = document.getElementById('historialLista');
+  const hist  = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+  if (!hist.length) { lista.innerHTML='<p style="font-size:12px;color:#999;text-align:center;padding:12px;">Sin registros aún</p>'; return; }
+  lista.innerHTML = hist.slice(0,10).map(reg => {
+    const fecha   = new Date(reg.fecha).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'});
+    const noCount = Object.values(reg.respuestas).filter(r=>r.resp==='NO').length;
+    const siCount = Object.values(reg.respuestas).filter(r=>r.resp==='SI').length;
+    const dotClass= noCount>0?'con-no':(siCount<totalPreguntas()?'parcial':'ok');
+    const fotoCount= Object.values(reg.fotos||{}).reduce((a,arr)=>a+arr.length,0);
+    return `<div class="historial-card">
+      <div class="hist-dot ${dotClass}"></div>
+      <div class="hist-info">
+        <div class="hist-fecha">${reg.inspector} · ${fecha}</div>
+        <div class="hist-meta">${reg.empresa||'Sin área'} · ${noCount>0?noCount+' no conf.':'Sin no conf.'} · 📷 ${fotoCount} foto${fotoCount!==1?'s':''} · ${reg.sincronia==='pendiente'?'⏳ Pendiente':'✅ Sync'}</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:5px;">
+        <button class="hist-btn" onclick="cargarRegistro(${reg.id})">Ver</button>
+        <button class="hist-btn" style="background:#25D366;color:white;border-color:#25D366;" onclick="compartirRegistro(${reg.id})">📲</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function cargarRegistro(id) {
+  const hist = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+  const reg  = hist.find(r=>r.id===id); if (!reg) return;
+  document.getElementById('inspector').value = reg.inspector||'';
+  document.getElementById('empresa').value   = reg.empresa||'';
+  document.getElementById('ubicacion').value = reg.ubicacion||'';
+  document.getElementById('fechaHora').value = (reg.fecha||'').slice(0,16);
+  respuestas = JSON.parse(JSON.stringify(reg.respuestas));
+  fotos = {};
+  renderControles(); actualizarStats();
+  window.scrollTo(0,0); mostrarToast('📂 Registro cargado','');
+}
+
+// ── COMPARTIR UN REGISTRO DEL HISTORIAL ──────────────────────────────────
+function construirCSVdeRegistro(reg) {
+  const fecha = (reg.fecha||'').slice(0,16);
+  let csv = `RC-21 - Lista de Verificación - Trabajo en Altura\nInspector,${reg.inspector||'-'}\nEmpresa/Área,${reg.empresa||'-'}\nUbicación,${reg.ubicacion||'-'}\nFecha/Hora,${fecha}\n\n`;
+  csv += 'N°,Tipo,Control,Subcontrol,Pregunta,Resultado,Observación,Fotos Drive\n';
+  let n=1;
+  CONTROLES.forEach((ctrl,ci) => ctrl.preguntas.forEach((preg,pi) => {
+    const key=`${ci}-${pi}`; const r=(reg.respuestas||{})[key]||{};
+    const fArr=(reg.fotos&&reg.fotos[key])||[];
+    const links=fArr.filter(f=>f.driveUrl).map(f=>f.driveUrl).join(' | ');
+    csv+=`${n},${ctrl.tipo.toUpperCase()},"${ctrl.nombre.replace(/"/g,'""')}",Subcontrol ${pi+1},"${preg.replace(/"/g,'""')}",${r.resp||'PENDIENTE'},"${(r.obs||'').replace(/"/g,'""')}","${links}"\n`;
+    n++;
+  }));
+  return csv;
+}
+
+function construirResumenTexto(reg) {
+  const fecha = new Date(reg.fecha).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'});
+  const vals  = Object.values(reg.respuestas||{});
+  const si = vals.filter(r=>r.resp==='SI').length;
+  const no = vals.filter(r=>r.resp==='NO').length;
+  const na = vals.filter(r=>r.resp==='NA').length;
+  let txt = `*RC-21 · Trabajo en Altura*\nInspector: ${reg.inspector||'-'}\nEmpresa/Área: ${reg.empresa||'-'}\nUbicación: ${reg.ubicacion||'-'}\nFecha: ${fecha}\n\n✓ Cumple: ${si}  ✗ No cumple: ${no}  N/A: ${na}\n`;
+  if (no > 0) {
+    txt += `\n*No conformidades:*\n`;
+    CONTROLES.forEach((ctrl,ci) => ctrl.preguntas.forEach((preg,pi) => {
+      const key=`${ci}-${pi}`; const r=(reg.respuestas||{})[key]||{};
+      if (r.resp==='NO') txt += `• ${ctrl.nombre} (Subcontrol ${pi+1})${r.obs?': '+r.obs:''}\n`;
+    }));
+  }
+  return txt;
+}
+
+async function compartirRegistro(id) {
+  const hist = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+  const reg  = hist.find(r=>r.id===id); if (!reg) return;
+
+  const csv = construirCSVdeRegistro(reg);
+  const nombreArchivo = `RC21_${(reg.inspector||'verificacion').replace(/ /g,'_')}_${(reg.fecha||'').slice(0,10)}.csv`;
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const file = new File([blob], nombreArchivo, {type:'text/csv'});
+
+  // Intento 1: compartir el archivo CSV directamente (Chrome Android)
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: 'RC-21 Trabajo en Altura', text: construirResumenTexto(reg) });
+      mostrarToast('📲 Compartido','verde');
+      return;
+    } catch(e) {
+      if (e.name === 'AbortError') return; // usuario canceló, no hacer nada más
+    }
+  }
+
+  // Intento 2: compartir solo texto (algunos navegadores soportan share de texto aunque no de archivos)
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'RC-21 Trabajo en Altura', text: construirResumenTexto(reg) });
+      mostrarToast('📲 Compartido','verde');
+      return;
+    } catch(e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+
+  // Fallback final: abrir WhatsApp directo con el resumen en texto + descargar CSV aparte
+  const texto = encodeURIComponent(construirResumenTexto(reg) + '\n(Se descargó también el CSV completo a tu carpeta de Descargas)');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = nombreArchivo;
+  a.click();
+  window.open(`https://wa.me/?text=${texto}`, '_blank');
+  mostrarToast('📥 CSV descargado y WhatsApp abierto','verde');
+}
+
+// ── NUEVO ─────────────────────────────────────────────────────────────────
+function nuevoChecklist() {
+  if (!confirm('¿Iniciar nueva verificación? Los datos no guardados se perderán.')) return;
+  respuestas={}; fotos={};
+  ['inspector','empresa','ubicacion'].forEach(id=>document.getElementById(id).value='');
+  const now=new Date(); now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+  document.getElementById('fechaHora').value=now.toISOString().slice(0,16);
+  renderControles(); actualizarStats(); window.scrollTo(0,0);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────
+function mostrarToast(msg,tipo) {
+  const t=document.getElementById('toast'); t.textContent=msg;
+  t.className=`toast visible ${tipo||''}`; setTimeout(()=>t.className='toast',3500);
+}
+
+// ── CONEXIÓN ──────────────────────────────────────────────────────────────
+function actualizarConexion() {
+  const online=navigator.onLine;
+  document.getElementById('syncDot').className=`sync-indicator ${online?'online':'offline'}`;
+  document.getElementById('offlineBanner').classList.toggle('visible',!online);
+  if (online) {
+    // Reintentar fotos pendientes
+    Object.entries(fotos).forEach(([key,arr]) => arr.forEach((f,i)=>{ if(f.estado!=='ok') subirFoto(key,i); }));
+    // Reintentar registros pendientes
+    const hist=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+    const pendientes=hist.filter(r=>r.sincronia==='pendiente');
+    pendientes.forEach(r=>enviarASheets(r));
+  }
+}
+window.addEventListener('online', actualizarConexion);
+window.addEventListener('offline', actualizarConexion);
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+(function init() {
+  const now=new Date(); now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+  document.getElementById('fechaHora').value=now.toISOString().slice(0,16);
+  cargarConfig(); renderControles(); actualizarStats(); actualizarConexion(); renderHistorial();
+})();
+</script>
+
+<!-- GOOGLE APPS SCRIPT (pegar en script.google.com) -->
+<!--
+=== COPIA ESTE SCRIPT EN script.google.com ===
+
+const SHEET_ID   = 'TU_GOOGLE_SHEET_ID';  // ID de tu Google Sheet
+const FOLDER_ID  = 'TU_FOLDER_ID';         // ID de tu carpeta en Drive
+
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+
+    if (data.accion === 'subirFoto') {
+      const folder = DriveApp.getFolderById(data.folderId || FOLDER_ID);
+      const blob   = Utilities.newBlob(Utilities.base64Decode(data.base64), 'image/jpeg', data.nombre);
+      const file   = folder.createFile(blob);
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      return ContentService.createTextOutput(JSON.stringify({ url: file.getDownloadUrl() })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    if (data.accion === 'agregarFilas') {
+      const ss    = SpreadsheetApp.openById(SHEET_ID);
+      let sheet   = ss.getSheetByName('RC21');
+      if (!sheet) {
+        sheet = ss.insertSheet('RC21');
+        sheet.appendRow(['Fecha','Inspector','Empresa','Ubicación','Tipo','Control','Subcontrol','Pregunta','Resultado','Observación','Fotos Drive']);
+        sheet.setFrozenRows(1);
+      }
+      data.filas.forEach(f => sheet.appendRow(f));
+      return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ error: err.message })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+-->
+</body>
+</html>
