@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0053)file:///C:/Users/USER/Downloads/RC21_Checklist_2.html -->
-<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="es">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#003366">
@@ -183,11 +183,11 @@
       <p>COR_Accidente · v.09 · ASIP Antamina</p>
     </div>
     <div class="header-icons">
-      <div class="sync-indicator online" id="syncDot" title="Estado de conexión"></div>
+      <div class="sync-indicator" id="syncDot" title="Estado de conexión"></div>
       <button class="settings-btn" onclick="abrirOpciones()" title="Opciones">⚙️</button>
     </div>
   </div>
-  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width: 0%;"></div></div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
 </header>
 
 <!-- OVERLAY + PANEL OPCIONES -->
@@ -202,7 +202,7 @@
   <div class="opcion-grupo">
     <div class="opcion-grupo-titulo">Conexión a la nube</div>
 
-    <div class="opcion-item" onclick="toggleSubpanel(&#39;subNube&#39;)">
+    <div class="opcion-item" onclick="toggleSubpanel('subNube')">
       <div class="opcion-icono" style="background:#dbeafe;">☁️</div>
       <div class="opcion-info">
         <div class="opcion-nombre">Google Sheets + Drive</div>
@@ -248,268 +248,16 @@
 </div>
 
 <!-- CONTROLES -->
-<div id="controlesContainer"><div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#E05C00;">● Controles Críticos</div><div class="seccion critico"><div class="seccion-header"><span class="seccion-badge">CRÍTICO</span><span class="seccion-titulo">Personal competente y autorizado para trabajo en altura</span><span class="chevron" id="chev-0">▾</span></div><div class="preguntas-wrap abierto" id="wrap-0"><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 1</div>
-      <div class="pregunta-texto">Solicite a cada trabajador en altura su credencial: ¿Cuenta con aptitud médica vigente (examen ocupacional anual con evaluación de suficiencia médica para altura) y, en el caso del andamiero, certificación vigente ≤24 meses emitida por el representante del fabricante del andamio?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;0-0&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;0-0&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;0-0&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-0-0" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;0-0&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-0-0">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-0-0" accept="image/*" capture="environment" onchange="agregarFoto(&#39;0-0&#39;,this)">
-          <label class="foto-btn" for="fotoGal-0-0">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-0-0" accept="image/*" onchange="agregarFoto(&#39;0-0&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-0-0"></div>
-      </div></div><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 2</div>
-      <div class="pregunta-texto">Pregunte al trabajador: ¿Cómo se siente hoy para trabajar en altura? ¿Tiene algún síntoma de fatiga, malestar, vértigo o mareo? ¿Sabe a quién reportar si durante la tarea se siente sin condiciones?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;0-1&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;0-1&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;0-1&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-0-1" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;0-1&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-0-1">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-0-1" accept="image/*" capture="environment" onchange="agregarFoto(&#39;0-1&#39;,this)">
-          <label class="foto-btn" for="fotoGal-0-1">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-0-1" accept="image/*" onchange="agregarFoto(&#39;0-1&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-0-1"></div>
-      </div></div></div></div><div class="seccion critico"><div class="seccion-header"><span class="seccion-badge">CRÍTICO</span><span class="seccion-titulo">Plan de rescate ante trauma de suspensión (≤10 min ICMM)</span><span class="chevron" id="chev-1">▾</span></div><div class="preguntas-wrap abierto" id="wrap-1"><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 1</div>
-      <div class="pregunta-texto">Muéstreme el plan de rescate específico documentado en el PETAR para esta tarea: ¿Identifica brigada activa del turno, kit de rescate disponible en zona (ubicación verificada), tiempo objetivo de respuesta ≤10 min, y frecuencia de radio operativa con el Centro de Control?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;1-0&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;1-0&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;1-0&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-1-0" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;1-0&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-1-0">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-1-0" accept="image/*" capture="environment" onchange="agregarFoto(&#39;1-0&#39;,this)">
-          <label class="foto-btn" for="fotoGal-1-0">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-1-0" accept="image/*" onchange="agregarFoto(&#39;1-0&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-1-0"></div>
-      </div></div><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 2</div>
-      <div class="pregunta-texto">Pregunte a los trabajadores: ¿Cuál es el protocolo ante caída con suspensión de su compañero? ¿Existe evidencia de simulacro de rescate ejecutado en los últimos 6 meses con tiempo real medido y dentro de la meta ≤10 min?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;1-1&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;1-1&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;1-1&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-1-1" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;1-1&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-1-1">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-1-1" accept="image/*" capture="environment" onchange="agregarFoto(&#39;1-1&#39;,this)">
-          <label class="foto-btn" for="fotoGal-1-1">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-1-1" accept="image/*" onchange="agregarFoto(&#39;1-1&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-1-1"></div>
-      </div></div></div></div><div class="seccion critico"><div class="seccion-header"><span class="seccion-badge">CRÍTICO</span><span class="seccion-titulo">Plataformas, superficies de trabajo y sistemas de andamiaje aprobados</span><span class="chevron" id="chev-2">▾</span></div><div class="preguntas-wrap abierto" id="wrap-2"><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 1</div>
-      <div class="pregunta-texto">¿La plataforma, andamio o equipo elevador en uso cuenta con permiso de montaje y uso vigente para el turno, con baranda ≥1.20 m íntegra en el 100% del perímetro, travesaño intermedio y rodapié ≥10 cm? Muéstreme el permiso y la tarjeta verde de habilitación.</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;2-0&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;2-0&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;2-0&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-2-0" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;2-0&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-2-0">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-2-0" accept="image/*" capture="environment" onchange="agregarFoto(&#39;2-0&#39;,this)">
-          <label class="foto-btn" for="fotoGal-2-0">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-2-0" accept="image/*" onchange="agregarFoto(&#39;2-0&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-2-0"></div>
-      </div></div><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 2</div>
-      <div class="pregunta-texto">Pida al trabajador que ejecute en su presencia la inspección pre-uso de la plataforma/andamio y describa qué hace si detecta un defecto. ¿Demuestra conocimiento del procedimiento "Fuera de Servicio" (etiquetado + no usar + reporte)?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;2-1&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;2-1&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;2-1&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-2-1" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;2-1&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-2-1">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-2-1" accept="image/*" capture="environment" onchange="agregarFoto(&#39;2-1&#39;,this)">
-          <label class="foto-btn" for="fotoGal-2-1">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-2-1" accept="image/*" onchange="agregarFoto(&#39;2-1&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-2-1"></div>
-      </div></div></div></div><div class="seccion critico"><div class="seccion-header"><span class="seccion-badge">CRÍTICO</span><span class="seccion-titulo">Protección colectiva instalada en bordes abiertos y aberturas</span><span class="chevron" id="chev-3">▾</span></div><div class="preguntas-wrap abierto" id="wrap-3"><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 1</div>
-      <div class="pregunta-texto">¿Existe restricción efectiva (barricada dura, no cinta de señalización) a 1.80 m del borde en el 100% del perímetro de la zona de trabajo, y todas las aberturas en piso están cubiertas con tapa resistente etiquetada "No retirar"?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;3-0&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;3-0&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;3-0&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-3-0" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;3-0&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-3-0">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-3-0" accept="image/*" capture="environment" onchange="agregarFoto(&#39;3-0&#39;,this)">
-          <label class="foto-btn" for="fotoGal-3-0">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-3-0" accept="image/*" onchange="agregarFoto(&#39;3-0&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-3-0"></div>
-      </div></div><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 2</div>
-      <div class="pregunta-texto">Si una baranda o cubierta debe retirarse para ejecutar la tarea, ¿qué protocolo aplica? Verifique en campo: ¿hay barrera dura instalada y registrada en el Permiso, y se confirma la reposición al cierre del turno?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;3-1&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;3-1&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;3-1&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-3-1" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;3-1&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-3-1">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-3-1" accept="image/*" capture="environment" onchange="agregarFoto(&#39;3-1&#39;,this)">
-          <label class="foto-btn" for="fotoGal-3-1">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-3-1" accept="image/*" onchange="agregarFoto(&#39;3-1&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-3-1"></div>
-      </div></div></div></div><div class="seccion critico"><div class="seccion-header"><span class="seccion-badge">CRÍTICO</span><span class="seccion-titulo">Segregación y control de acceso en zona de trabajo en altura y en zona de exclusión inferior (drop zone)</span><span class="chevron" id="chev-4">▾</span></div><div class="preguntas-wrap abierto" id="wrap-4"><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 1</div>
-      <div class="pregunta-texto">Recorra el perímetro superior (zona de trabajo) y el perímetro inferior (drop zone): ¿Ambos están delimitados con barrera dura, señalización "Peligro - Trabajo en Altura" arriba y "Caída de Objetos - No Transitar / Zona de Exclusión" abajo, con radio inferior dimensionado según cálculo de deflexión documentado en el PETAR (referencia: hasta 2× la altura de caída) y una autoridad de zona nominada por nombre en el Permiso para cada perímetro?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;4-0&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;4-0&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;4-0&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-4-0" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;4-0&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-4-0">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-4-0" accept="image/*" capture="environment" onchange="agregarFoto(&#39;4-0&#39;,this)">
-          <label class="foto-btn" for="fotoGal-4-0">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-4-0" accept="image/*" onchange="agregarFoto(&#39;4-0&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-4-0"></div>
-      </div></div><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 2</div>
-      <div class="pregunta-texto">Permanezca 10 minutos en el perímetro inferior (drop zone): ¿Existe vigilante activo controlando el acceso, todo el personal y vehículos respetan el perímetro, y las herramientas/equipos en altura cuentan con sistema de retención secundaria (redes, cubiertas) que evita objetos caídos sobre la zona?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;4-1&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;4-1&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;4-1&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-4-1" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;4-1&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-4-1">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-4-1" accept="image/*" capture="environment" onchange="agregarFoto(&#39;4-1&#39;,this)">
-          <label class="foto-btn" for="fotoGal-4-1">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-4-1" accept="image/*" onchange="agregarFoto(&#39;4-1&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-4-1"></div>
-      </div></div></div></div><div class="seccion critico"><div class="seccion-header"><span class="seccion-badge">CRÍTICO</span><span class="seccion-titulo">Sistema de restricción y detención de caídas certificado (arnés + anclaje + 100% tie off)</span><span class="chevron" id="chev-5">▾</span></div><div class="preguntas-wrap abierto" id="wrap-5"><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 1</div>
-      <div class="pregunta-texto">Muéstreme el arnés y línea de vida que está usando. ¿Tiene etiqueta de color cuatrimestral vigente (Rojo: Ene-Abr / Azul: May-Ago / Amarillo: Set-Dic), mosquetones de doble seguro funcionales, cinta anti trauma instalada, y el anclaje certificado ≥22.7 kN (2,270 kgf) identificado en el Permiso?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;5-0&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;5-0&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;5-0&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-5-0" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;5-0&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-5-0">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-5-0" accept="image/*" capture="environment" onchange="agregarFoto(&#39;5-0&#39;,this)">
-          <label class="foto-btn" for="fotoGal-5-0">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-5-0" accept="image/*" onchange="agregarFoto(&#39;5-0&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-5-0"></div>
-      </div></div><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 2</div>
-      <div class="pregunta-texto">Solicite al trabajador que demuestre el principio de 100% tie-off durante un desplazamiento simulado y que explique cómo se calcula la distancia segura de caída para su tarea. ¿Aplica correctamente la doble línea de vida sin desconexión en ningún momento?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;5-1&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;5-1&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;5-1&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-5-1" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;5-1&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-5-1">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-5-1" accept="image/*" capture="environment" onchange="agregarFoto(&#39;5-1&#39;,this)">
-          <label class="foto-btn" for="fotoGal-5-1">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-5-1" accept="image/*" onchange="agregarFoto(&#39;5-1&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-5-1"></div>
-      </div></div></div></div><div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#1a4d8f;">● Controles Preventivos</div><div class="seccion preventivo"><div class="seccion-header"><span class="seccion-badge">PREVENTIVO</span><span class="seccion-titulo">Permiso de trabajo en altura (PETAR) con verificación en campo</span><span class="chevron" id="chev-6">▾</span></div><div class="preguntas-wrap abierto" id="wrap-6"><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 1</div>
-      <div class="pregunta-texto">Muéstreme el PETAR vigente para esta tarea: ¿está firmado por Supervisor autorizado, vigente para este turno, con verificación física en campo de los 7 controles críticos (lista de chequeo binaria) y plan de rescate específico documentado?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;6-0&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;6-0&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;6-0&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-6-0" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;6-0&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-6-0">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-6-0" accept="image/*" capture="environment" onchange="agregarFoto(&#39;6-0&#39;,this)">
-          <label class="foto-btn" for="fotoGal-6-0">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-6-0" accept="image/*" onchange="agregarFoto(&#39;6-0&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-6-0"></div>
-      </div></div><div class="pregunta-item">
-      <div class="pregunta-num">Subcontrol 2</div>
-      <div class="pregunta-texto">Identifique si aplica un cambio de condición ocurrido desde la emisión del PETAR (cambio de clima, alcance, integrante de cuadrilla, herramienta o método). Pida al Supervisor que muestre cómo quedó documentado ese cambio en el Permiso. ¿El PETAR refleja la condición actual o la condición inicial?</div>
-      <div class="opciones-resp">
-        <button class="opcion-btn si " onclick="responder(&#39;6-1&#39;,&#39;SI&#39;,this)">✓ Cumple</button>
-        <button class="opcion-btn no " onclick="responder(&#39;6-1&#39;,&#39;NO&#39;,this)">✗ No cumple</button>
-        <button class="opcion-btn na " onclick="responder(&#39;6-1&#39;,&#39;NA&#39;,this)">N/A</button>
-      </div>
-      <textarea class="obs-input " id="obs-6-1" placeholder="Descripción de la no conformidad / acción correctiva..." onchange="guardarObs(&#39;6-1&#39;,this.value)"></textarea>
-      <div class="foto-zona">
-        <span class="foto-label">📷 Foto de evidencia</span>
-        <div class="foto-btn-wrap">
-          <label class="foto-btn" for="fotoFile-6-1">📷 Cámara</label>
-          <input class="foto-input" type="file" id="fotoFile-6-1" accept="image/*" capture="environment" onchange="agregarFoto(&#39;6-1&#39;,this)">
-          <label class="foto-btn" for="fotoGal-6-1">🖼 Galería</label>
-          <input class="foto-input" type="file" id="fotoGal-6-1" accept="image/*" onchange="agregarFoto(&#39;6-1&#39;,this)">
-        </div>
-        <div class="foto-preview-wrap" id="fotos-6-1"></div>
-      </div></div></div></div></div>
+<div id="controlesContainer"></div>
 
 <!-- RESUMEN -->
 <div class="resumen-barra">
   <div class="resumen-titulo">Resumen de verificación</div>
   <div class="resumen-stats">
-    <div class="stat-item stat-total"><span class="stat-num" id="statTotal">14</span><span class="stat-label">Total</span></div>
+    <div class="stat-item stat-total"><span class="stat-num" id="statTotal">0</span><span class="stat-label">Total</span></div>
     <div class="stat-item stat-si"><span class="stat-num" id="statSi">0</span><span class="stat-label">✓ Cumple</span></div>
     <div class="stat-item stat-no"><span class="stat-num" id="statNo">0</span><span class="stat-label">✗ No cumple</span></div>
-    <div class="stat-item stat-pend"><span class="stat-num" id="statPend">14</span><span class="stat-label">Pendiente</span></div>
+    <div class="stat-item stat-pend"><span class="stat-num" id="statPend">0</span><span class="stat-label">Pendiente</span></div>
     <div class="stat-item stat-na"><span class="stat-num" id="statNa">0</span><span class="stat-label">N/A</span></div>
   </div>
 </div>
@@ -525,13 +273,13 @@
 <!-- HISTORIAL -->
 <div class="historial-sec">
   <div class="historial-titulo">Historial local</div>
-  <div id="historialLista"><p style="font-size:12px;color:#999;text-align:center;padding:12px;">Sin registros aún</p></div>
+  <div id="historialLista"></div>
 </div>
 
 <!-- MODAL FOTO -->
 <div class="foto-modal" id="fotoModal" onclick="cerrarModal()">
   <button class="foto-modal-close" onclick="cerrarModal()">✕</button>
-  <img id="fotoModalImg" src="file:///C:/Users/USER/Downloads/RC21_Checklist_2.html" alt="Evidencia">
+  <img id="fotoModalImg" src="" alt="Evidencia">
 </div>
 
 <div class="toast" id="toast"></div>
@@ -720,7 +468,35 @@ function setFotoStatus(key,idx,estado,texto){
 async function postScript(payload){
   const cfg=JSON.parse(localStorage.getItem(CONFIG_KEY)||'{}');
   const url=cfg.sheetUrl||DEFAULT_SHEET_URL;
-  return await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+  // Usamos un iframe oculto para evitar CORS
+  return new Promise((resolve,reject)=>{
+    try{
+      const form=document.createElement('form');
+      form.method='POST';
+      form.action=url;
+      form.target='_hiddenFrame';
+      form.style.display='none';
+      const input=document.createElement('input');
+      input.type='hidden';
+      input.name='payload';
+      input.value=JSON.stringify(payload);
+      form.appendChild(input);
+      let iframe=document.getElementById('_hiddenFrame');
+      if(!iframe){
+        iframe=document.createElement('iframe');
+        iframe.name='_hiddenFrame';
+        iframe.id='_hiddenFrame';
+        iframe.style.display='none';
+        document.body.appendChild(iframe);
+      }
+      iframe.onload=()=>resolve({ok:true});
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+      // Resolver después de 3 segundos si no hay respuesta
+      setTimeout(()=>resolve({ok:true}),3000);
+    }catch(e){reject(e);}
+  });
 }
 
 async function subirFoto(key,idx){
@@ -960,6 +736,5 @@ window.addEventListener('offline',actualizarConexion);
   cargarConfig();renderControles();actualizarStats();actualizarConexion();renderHistorial();
 })();
 </script>
-
-
-</body></html>
+</body>
+</html>
