@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#003366">
-<title>RC-21 · Trabajo en Altura · Antamina</title>
+<title>Riesgos Críticos · Antamina</title>
 <style>
   :root {
     --azul:#003366; --azul-medio:#1a4d8f; --naranja:#E05C00;
@@ -32,6 +32,13 @@
   .settings-btn:active{background:rgba(255,255,255,0.3);}
   .progress-bar-wrap{background:rgba(255,255,255,0.15);height:4px;}
   .progress-bar-fill{height:4px;background:var(--naranja-light);transition:width 0.4s ease;width:0%;}
+
+  /* TABS RIESGOS */
+  .rc-tabs{display:flex;gap:6px;padding:10px 12px 0;max-width:480px;margin:0 auto;}
+  .rc-tab{flex:1;padding:10px 6px;border:2px solid var(--gris-borde);border-radius:8px;background:white;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fuente);color:var(--texto-suave);transition:all 0.15s;line-height:1.3;}
+  .rc-tab:active{transform:scale(0.97);}
+  .rc-tab.activo{background:var(--azul);border-color:var(--azul);color:white;}
+  .sigla-nemo{color:var(--naranja-light);font-weight:900;font-size:14px;}
 
   /* MENÚ OPCIONES */
   .opciones-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;}
@@ -177,10 +184,10 @@
 
 <header>
   <div class="header-top">
-    <div class="logo-badge">RC‑21</div>
+    <div class="logo-badge" id="rcBadge">RC‑21</div>
     <div class="header-title">
-      <h1>Trabajo en Altura</h1>
-      <p>COR_Accidente · v.09 · ASIP Antamina</p>
+      <h1 id="rcTitulo">Trabajo en Altura</h1>
+      <p>COR_Accidente · v.10 · ASIP Antamina</p>
     </div>
     <div class="header-icons">
       <div class="sync-indicator" id="syncDot" title="Estado de conexión"></div>
@@ -228,8 +235,8 @@
     <div class="opcion-item">
       <div class="opcion-icono" style="background:#dcfce7;">📋</div>
       <div class="opcion-info">
-        <div class="opcion-nombre">RC-21 · Trabajo en Altura</div>
-        <div class="opcion-desc">v.09 · Estándar ASIP Antamina</div>
+        <div class="opcion-nombre">Verificación de Riesgos Críticos</div>
+        <div class="opcion-desc">RC-21 · RC-12 · v.10 · Estándar ASIP Antamina</div>
       </div>
     </div>
   </div>
@@ -237,6 +244,12 @@
 
 <div class="offline-banner" id="offlineBanner">
   📵 Sin conexión — datos y fotos se guardan localmente y sincronizarán al reconectarse
+</div>
+
+<!-- SELECTOR DE RIESGO CRÍTICO -->
+<div class="rc-tabs">
+  <button class="rc-tab activo" id="tab-RC21" onclick="cambiarRC('RC21')">RC-21<br>Trabajo en Altura</button>
+  <button class="rc-tab" id="tab-RC12" onclick="cambiarRC('RC12')">RC-12<br>Atropello (PECODE-SS)</button>
 </div>
 
 <!-- DATOS DEL INSPECTOR -->
@@ -285,7 +298,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const CONTROLES=[
+const RIESGOS={
+RC21:{codigo:'RC-21',nombre:'Trabajo en Altura',controles:[
   {tipo:'critico',nombre:'Personal competente y autorizado para trabajo en altura',preguntas:[
     'Solicite a cada trabajador en altura su credencial: ¿Cuenta con aptitud médica vigente (examen ocupacional anual con evaluación de suficiencia médica para altura) y, en el caso del andamiero, certificación vigente ≤24 meses emitida por el representante del fabricante del andamio?',
     'Pregunte al trabajador: ¿Cómo se siente hoy para trabajar en altura? ¿Tiene algún síntoma de fatiga, malestar, vértigo o mareo? ¿Sabe a quién reportar si durante la tarea se siente sin condiciones?'
@@ -314,16 +328,59 @@ const CONTROLES=[
     'Muéstreme el PETAR vigente para esta tarea: ¿está firmado por Supervisor autorizado, vigente para este turno, con verificación física en campo de los 7 controles críticos (lista de chequeo binaria) y plan de rescate específico documentado?',
     'Identifique si aplica un cambio de condición ocurrido desde la emisión del PETAR (cambio de clima, alcance, integrante de cuadrilla, herramienta o método). Pida al Supervisor que muestre cómo quedó documentado ese cambio en el Permiso. ¿El PETAR refleja la condición actual o la condición inicial?'
   ]}
-];
+]},
+RC12:{codigo:'RC-12',nombre:'Atropello de Personas por Equipos o Vehículos (PECODE-SS)',controles:[
+  {tipo:'critico',sigla:'PE',nombre:'PETAR y Supervisión permanente para actividades de Pit Utilities',preguntas:[
+    'Muéstreme el PETAR de la actividad de Pit Utilities en curso y verifique: ¿Está firmado por el K1 (ingeniero colegiado habilitado) antes del inicio del turno?',
+    '¿Tiene el IPERC continuo completado con participación de todo el personal para el turno?',
+    '¿El K1 está físicamente presente en la zona de trabajo en este momento?',
+    'Solicite al K1 que demuestre qué acción toma si durante la actividad detecta un cambio en las condiciones de la zona. Por ejemplo, un equipo que se aproxima fuera del protocolo o una variación en el área de trabajo. Respuesta esperada: detiene inmediatamente la actividad, retira al personal de la zona, actualiza el IPERC continuo con la nueva condición y no reanuda hasta que las condiciones sean seguras. Criterio de rechazo: K1 no menciona la detención inmediata o la actualización del IPERC ante cambio de condiciones.'
+  ]},
+  {tipo:'critico',sigla:'CO',nombre:'Comunicación en el área de trabajo',preguntas:[
+    '¿Cuenta el personal en piso y el operador del equipo en el área con confirmación de comunicación mutua antes del inicio de la actividad (contacto positivo radial o visual verificable) según el protocolo del área?',
+    'Pregunte al trabajador en piso: ¿qué hace si no logra establecer contacto con el operador del equipo antes de ingresar a la zona de trabajo?'
+  ]},
+  {tipo:'critico',sigla:'DE',nombre:'Detención y paralización de operaciones en el área de trabajo',preguntas:[
+    '¿El personal cuenta con los canales y herramientas de comunicación (radios operativos, silbatos, paletas, etc.) para aplicar la detención de actividades y se encuentran asignados de acuerdo con el estándar del área?',
+    'Pregunte al personal de piso u operador: ¿En qué condiciones detiene la operación de forma inmediata? Respuesta esperada: si se pierde contacto visual o radial, si un peatón o equipo ingresa a la zona de segregación sin autorización, ante condiciones climáticas adversas que limiten la visibilidad o si se identifica un peligro no controlado.'
+  ]},
+  {tipo:'critico',sigla:'S',nombre:'Segregación física permanente de zonas peatonales y zonas de operación de equipos',preguntas:[
+    'Verifique en las rutas de tránsito compartidas: ¿Existe segregación física permanente (bermas, muretes de concreto, barandas, etc.) que separe el tránsito peatonal del vehicular/equipos pesados según el diseño del área?',
+    '¿Las estructuras de segregación física se encuentran estables, visibles (señalizadas/pintadas) y sin daños estructurales que comprometan su función?'
+  ]},
+  {tipo:'critico',sigla:'S',nombre:'Segregación temporal de la zona de trabajo',preguntas:[
+    'En zonas de trabajo temporal, verifique: ¿Se encuentra delimitada y restringida el área mediante elementos temporales (conos con barras, mallas, tranqueras, vallas, etc.) de acuerdo con el estándar y el radio de influencia de los equipos?',
+    '¿La delimitación temporal cuenta con letreros informativos visibles que indiquen el peligro, el nombre del responsable y la autorización requerida para el ingreso?'
+  ]}
+]}
+};
+let currentRC='RC21';
+let CONTROLES=RIESGOS[currentRC].controles;
 
 // ── DEFAULTS HARDCODEADOS ─────────────────────────────────────────────────
 const DEFAULT_SHEET_URL    = 'https://script.google.com/macros/s/AKfycby-ZEfH5T3L-x42sEqlV-n0wXEP3qvqc0UMeG17pVpbs7VXPsOo5n1a76Pyqgy08gS3/exec';
-const DEFAULT_DRIVE_FOLDER = '1Gt92sldGqJE9V9yN8Riz4w477mx1_utG';
+const DEFAULT_DRIVE_FOLDER = '1uXZx_HuQW6Aaz3iS53a8UTv7G3uPUA49';
 
-let respuestas={};
-let fotos={};
+const stateRC={RC21:{respuestas:{},fotos:{}},RC12:{respuestas:{},fotos:{}}};
+let respuestas=stateRC[currentRC].respuestas;
+let fotos=stateRC[currentRC].fotos;
 const STORAGE_KEY='rc21_historial';
 const CONFIG_KEY='rc21_config';
+
+// ── CAMBIO DE RIESGO CRÍTICO ──────────────────────────────────────────────
+function cambiarRC(rc){
+  if(rc===currentRC)return;
+  currentRC=rc;
+  CONTROLES=RIESGOS[rc].controles;
+  respuestas=stateRC[rc].respuestas;
+  fotos=stateRC[rc].fotos;
+  document.getElementById('rcBadge').textContent=RIESGOS[rc].codigo.replace('-','‑');
+  document.getElementById('rcTitulo').textContent=RIESGOS[rc].nombre;
+  document.querySelectorAll('.rc-tab').forEach(b=>b.classList.remove('activo'));
+  const tab=document.getElementById('tab-'+rc);
+  if(tab)tab.classList.add('activo');
+  renderControles();actualizarStats();window.scrollTo(0,0);
+}
 
 // ── PANEL OPCIONES ────────────────────────────────────────────────────────
 function abrirOpciones(){
@@ -364,9 +421,9 @@ function renderControles(){
   container.innerHTML='';
   const criticos=CONTROLES.filter(c=>c.tipo==='critico');
   const preventivos=CONTROLES.filter(c=>c.tipo==='preventivo');
-  container.innerHTML+=`<div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#E05C00;">● Controles Críticos</div>`;
+  if(criticos.length)container.innerHTML+=`<div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#E05C00;">● Controles Críticos</div>`;
   criticos.forEach((ctrl,ci)=>renderControl(container,ctrl,ci));
-  container.innerHTML+=`<div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#1a4d8f;">● Controles Preventivos</div>`;
+  if(preventivos.length)container.innerHTML+=`<div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#1a4d8f;">● Controles Preventivos</div>`;
   preventivos.forEach((ctrl,pi)=>renderControl(container,ctrl,pi+criticos.length));
 }
 
@@ -375,7 +432,9 @@ function renderControl(container,ctrl,idx){
   sec.className=`seccion ${ctrl.tipo}`;
   const header=document.createElement('div');
   header.className='seccion-header';
-  header.innerHTML=`<span class="seccion-badge">${ctrl.tipo==='critico'?'CRÍTICO':'PREVENTIVO'}</span><span class="seccion-titulo">${ctrl.nombre}</span><span class="chevron" id="chev-${idx}">▾</span>`;
+  const badge=ctrl.tipo==='preventivo'?'<span class="seccion-badge">PREVENTIVO</span>':'';
+  const titulo=ctrl.sigla?`<span class="sigla-nemo">${ctrl.sigla}</span> – ${ctrl.nombre}`:ctrl.nombre;
+  header.innerHTML=`${badge}<span class="seccion-titulo">${titulo}</span><span class="chevron" id="chev-${idx}">▾</span>`;
   header.onclick=()=>toggleControl(idx);
   const wrap=document.createElement('div');
   wrap.className='preguntas-wrap abierto';
@@ -441,7 +500,7 @@ function agregarFoto(key,input){
   reader.onload=e=>{
     fotos[key]=fotos[key]||[];
     const idx=fotos[key].length;
-    fotos[key].push({dataUrl:e.target.result,nombre:`RC21_${key}_${Date.now()}.jpg`,driveUrl:null,estado:'pendiente'});
+    fotos[key].push({dataUrl:e.target.result,nombre:`${currentRC}_${key}_${Date.now()}.jpg`,driveUrl:null,estado:'pendiente'});
     renderThumb(key,idx);
     if(navigator.onLine)subirFoto(key,idx);
     else setFotoStatus(key,idx,'pendiente','⏳ Se subirá al conectarse');
@@ -548,6 +607,7 @@ function guardarChecklist(){
   if(!inspector){mostrarToast('⚠️ Ingrese el nombre del inspector','rojo');return;}
   const registro={
     id:Date.now(),
+    rc:currentRC,
     fecha:document.getElementById('fechaHora').value||new Date().toISOString(),
     inspector,empresa:document.getElementById('empresa').value,
     ubicacion:document.getElementById('ubicacion').value,
@@ -567,10 +627,12 @@ function guardarChecklist(){
 async function enviarASheets(registro){
   mostrarToast('☁️ Enviando a Google Sheets...','');
   try{
+    const R=RIESGOS[registro.rc||'RC21'];
     const filas=[];
-    CONTROLES.forEach((ctrl,ci)=>ctrl.preguntas.forEach((preg,pi)=>{
+    R.controles.forEach((ctrl,ci)=>ctrl.preguntas.forEach((preg,pi)=>{
       const key=`${ci}-${pi}`;const r=registro.respuestas[key]||{};
-      filas.push([registro.fecha,registro.inspector,registro.empresa,registro.ubicacion,ctrl.tipo.toUpperCase(),ctrl.nombre,`Subcontrol ${pi+1}`,preg,r.resp||'PENDIENTE',r.obs||'','']);
+      const nombreCtrl=(ctrl.sigla?ctrl.sigla+' – ':'')+ctrl.nombre;
+      filas.push([registro.fecha,registro.inspector,registro.empresa,registro.ubicacion,`${R.codigo} ${ctrl.tipo.toUpperCase()}`,nombreCtrl,`Subcontrol ${pi+1}`,preg,r.resp||'PENDIENTE',r.obs||'','']);
     }));
     await postScript({accion:'agregarFilas',filas});
     const hist=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
@@ -581,61 +643,65 @@ async function enviarASheets(registro){
 }
 
 // ── CSV ───────────────────────────────────────────────────────────────────
-function construirCSV(resp_override,fotos_override){
+function construirCSV(resp_override,fotos_override,rc_override){
   const inspector=document.getElementById('inspector').value||'-';
   const empresa=document.getElementById('empresa').value||'-';
   const ubicacion=document.getElementById('ubicacion').value||'-';
   const fecha=document.getElementById('fechaHora').value||new Date().toISOString().slice(0,16);
   const R=resp_override||respuestas;
   const F=fotos_override||fotos;
-  let csv=`RC-21 - Lista de Verificación - Trabajo en Altura\nInspector,${inspector}\nEmpresa/Área,${empresa}\nUbicación,${ubicacion}\nFecha/Hora,${fecha}\n\n`;
+  const RG=RIESGOS[rc_override||currentRC];
+  let csv=`${RG.codigo} - Lista de Verificación - ${RG.nombre}\nInspector,${inspector}\nEmpresa/Área,${empresa}\nUbicación,${ubicacion}\nFecha/Hora,${fecha}\n\n`;
   csv+='N°,Tipo,Control,Subcontrol,Pregunta,Resultado,Observación,Fotos Drive\n';
   let n=1;
-  CONTROLES.forEach((ctrl,ci)=>ctrl.preguntas.forEach((preg,pi)=>{
+  RG.controles.forEach((ctrl,ci)=>ctrl.preguntas.forEach((preg,pi)=>{
     const key=`${ci}-${pi}`;const r=(R[key])||{};
     const links=((F[key])||[]).filter(f=>f.driveUrl).map(f=>f.driveUrl).join(' | ');
-    csv+=`${n},${ctrl.tipo.toUpperCase()},"${ctrl.nombre.replace(/"/g,'""')}",Subcontrol ${pi+1},"${preg.replace(/"/g,'""')}",${r.resp||'PENDIENTE'},"${(r.obs||'').replace(/"/g,'""')}","${links}"\n`;
+    const nombreCtrl=(ctrl.sigla?ctrl.sigla+' – ':'')+ctrl.nombre;
+    csv+=`${n},${ctrl.tipo.toUpperCase()},"${nombreCtrl.replace(/"/g,'""')}",Subcontrol ${pi+1},"${preg.replace(/"/g,'""')}",${r.resp||'PENDIENTE'},"${(r.obs||'').replace(/"/g,'""')}","${links}"\n`;
     n++;
   }));
-  return{csv,inspector,fecha};
+  return{csv,inspector,fecha,codigo:RG.codigo};
 }
 function exportarCSV(){
-  const{csv,inspector,fecha}=construirCSV();
+  const{csv,inspector,fecha,codigo}=construirCSV();
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`RC21_${inspector.replace(/ /g,'_')}_${fecha.slice(0,10)}.csv`;a.click();
+  a.download=`${codigo.replace('-','')}_${inspector.replace(/ /g,'_')}_${fecha.slice(0,10)}.csv`;a.click();
   mostrarToast('📥 CSV descargado','verde');
 }
 
 // ── COMPARTIR ─────────────────────────────────────────────────────────────
 function construirResumenTexto(reg){
+  const RG=RIESGOS[reg.rc||'RC21'];
   const fecha=new Date(reg.fecha).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'});
   const vals=Object.values(reg.respuestas||{});
   const si=vals.filter(r=>r.resp==='SI').length;
   const no=vals.filter(r=>r.resp==='NO').length;
   const na=vals.filter(r=>r.resp==='NA').length;
-  let txt=`*RC-21 · Trabajo en Altura*\nInspector: ${reg.inspector||'-'}\nEmpresa/Área: ${reg.empresa||'-'}\nUbicación: ${reg.ubicacion||'-'}\nFecha: ${fecha}\n\n✓ Cumple: ${si}  ✗ No cumple: ${no}  N/A: ${na}\n`;
+  let txt=`*${RG.codigo} · ${RG.nombre}*\nInspector: ${reg.inspector||'-'}\nEmpresa/Área: ${reg.empresa||'-'}\nUbicación: ${reg.ubicacion||'-'}\nFecha: ${fecha}\n\n✓ Cumple: ${si}  ✗ No cumple: ${no}  N/A: ${na}\n`;
   if(no>0){
     txt+=`\n*No conformidades:*\n`;
-    CONTROLES.forEach((ctrl,ci)=>ctrl.preguntas.forEach((preg,pi)=>{
+    RG.controles.forEach((ctrl,ci)=>ctrl.preguntas.forEach((preg,pi)=>{
       const key=`${ci}-${pi}`;const r=(reg.respuestas||{})[key]||{};
-      if(r.resp==='NO')txt+=`• ${ctrl.nombre} (Subcontrol ${pi+1})${r.obs?': '+r.obs:''}\n`;
+      if(r.resp==='NO')txt+=`• ${(ctrl.sigla?ctrl.sigla+' – ':'')+ctrl.nombre} (Subcontrol ${pi+1})${r.obs?': '+r.obs:''}\n`;
     }));
   }
   return txt;
 }
 async function compartirCSV(){
-  const{csv,inspector,fecha}=construirCSV();
-  const nombreArchivo=`RC21_${inspector.replace(/ /g,'_')||'verificacion'}_${fecha.slice(0,10)}.csv`;
+  const{csv,inspector,fecha,codigo}=construirCSV();
+  const RG=RIESGOS[currentRC];
+  const nombreArchivo=`${codigo.replace('-','')}_${inspector.replace(/ /g,'_')||'verificacion'}_${fecha.slice(0,10)}.csv`;
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   const file=new File([blob],nombreArchivo,{type:'text/csv'});
-  const textoResumen=`*RC-21 · Trabajo en Altura*\nInspector: ${inspector}\nFecha: ${fecha}`;
+  const textoResumen=`*${RG.codigo} · ${RG.nombre}*\nInspector: ${inspector}\nFecha: ${fecha}`;
   if(navigator.canShare&&navigator.canShare({files:[file]})){
-    try{await navigator.share({files:[file],title:'RC-21 Trabajo en Altura',text:textoResumen});mostrarToast('📲 Compartido','verde');return;}
+    try{await navigator.share({files:[file],title:`${RG.codigo} ${RG.nombre}`,text:textoResumen});mostrarToast('📲 Compartido','verde');return;}
     catch(e){if(e.name==='AbortError')return;}
   }
   if(navigator.share){
-    try{await navigator.share({title:'RC-21 Trabajo en Altura',text:textoResumen});mostrarToast('📲 Compartido','verde');return;}
+    try{await navigator.share({title:`${RG.codigo} ${RG.nombre}`,text:textoResumen});mostrarToast('📲 Compartido','verde');return;}
     catch(e){if(e.name==='AbortError')return;}
   }
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nombreArchivo;a.click();
@@ -645,17 +711,18 @@ async function compartirCSV(){
 async function compartirRegistro(id){
   const hist=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
   const reg=hist.find(r=>r.id===id);if(!reg)return;
-  const{csv}=construirCSV(reg.respuestas,reg.fotos||{});
-  const nombreArchivo=`RC21_${(reg.inspector||'verificacion').replace(/ /g,'_')}_${(reg.fecha||'').slice(0,10)}.csv`;
+  const RG=RIESGOS[reg.rc||'RC21'];
+  const{csv}=construirCSV(reg.respuestas,reg.fotos||{},reg.rc||'RC21');
+  const nombreArchivo=`${RG.codigo.replace('-','')}_${(reg.inspector||'verificacion').replace(/ /g,'_')}_${(reg.fecha||'').slice(0,10)}.csv`;
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   const file=new File([blob],nombreArchivo,{type:'text/csv'});
   const texto=construirResumenTexto(reg);
   if(navigator.canShare&&navigator.canShare({files:[file]})){
-    try{await navigator.share({files:[file],title:'RC-21 Trabajo en Altura',text:texto});mostrarToast('📲 Compartido','verde');return;}
+    try{await navigator.share({files:[file],title:`${RG.codigo} ${RG.nombre}`,text:texto});mostrarToast('📲 Compartido','verde');return;}
     catch(e){if(e.name==='AbortError')return;}
   }
   if(navigator.share){
-    try{await navigator.share({title:'RC-21 Trabajo en Altura',text:texto});mostrarToast('📲 Compartido','verde');return;}
+    try{await navigator.share({title:`${RG.codigo} ${RG.nombre}`,text:texto});mostrarToast('📲 Compartido','verde');return;}
     catch(e){if(e.name==='AbortError')return;}
   }
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nombreArchivo;a.click();
@@ -670,15 +737,17 @@ function renderHistorial(){
   if(!hist.length){lista.innerHTML='<p style="font-size:12px;color:#999;text-align:center;padding:12px;">Sin registros aún</p>';return;}
   lista.innerHTML=hist.slice(0,10).map(reg=>{
     const fecha=new Date(reg.fecha).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'});
+    const RG=RIESGOS[reg.rc||'RC21'];
+    const totalReg=RG.controles.reduce((a,c)=>a+c.preguntas.length,0);
     const noCount=Object.values(reg.respuestas).filter(r=>r.resp==='NO').length;
     const siCount=Object.values(reg.respuestas).filter(r=>r.resp==='SI').length;
-    const dotClass=noCount>0?'con-no':(siCount<totalPreguntas()?'parcial':'ok');
+    const dotClass=noCount>0?'con-no':(siCount<totalReg?'parcial':'ok');
     const fotoCount=Object.values(reg.fotos||{}).reduce((a,arr)=>a+arr.length,0);
     return `<div class="historial-card">
       <div class="hist-dot ${dotClass}"></div>
       <div class="hist-info">
         <div class="hist-fecha">${reg.inspector} · ${fecha}</div>
-        <div class="hist-meta">${reg.empresa||'Sin área'} · ${noCount>0?noCount+' no conf.':'Sin no conf.'} · 📷 ${fotoCount} foto${fotoCount!==1?'s':''} · ${reg.sincronia==='pendiente'?'⏳ Pendiente':'✅ Sync'}</div>
+        <div class="hist-meta">${RG.codigo} · ${reg.empresa||'Sin área'} · ${noCount>0?noCount+' no conf.':'Sin no conf.'} · 📷 ${fotoCount} foto${fotoCount!==1?'s':''} · ${reg.sincronia==='pendiente'?'⏳ Pendiente':'✅ Sync'}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;">
         <button class="hist-btn" onclick="cargarRegistro(${reg.id})">Ver</button>
@@ -690,19 +759,25 @@ function renderHistorial(){
 function cargarRegistro(id){
   const hist=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
   const reg=hist.find(r=>r.id===id);if(!reg)return;
+  const rc=reg.rc||'RC21';
+  if(rc!==currentRC)cambiarRC(rc);
   document.getElementById('inspector').value=reg.inspector||'';
   document.getElementById('empresa').value=reg.empresa||'';
   document.getElementById('ubicacion').value=reg.ubicacion||'';
   document.getElementById('fechaHora').value=(reg.fecha||'').slice(0,16);
-  respuestas=JSON.parse(JSON.stringify(reg.respuestas));
-  fotos={};
+  stateRC[currentRC].respuestas=JSON.parse(JSON.stringify(reg.respuestas));
+  stateRC[currentRC].fotos={};
+  respuestas=stateRC[currentRC].respuestas;
+  fotos=stateRC[currentRC].fotos;
   renderControles();actualizarStats();window.scrollTo(0,0);mostrarToast('📂 Registro cargado','');
 }
 
 // ── NUEVO ─────────────────────────────────────────────────────────────────
 function nuevoChecklist(){
   if(!confirm('¿Iniciar nueva verificación? Los datos no guardados se perderán.'))return;
-  respuestas={};fotos={};
+  stateRC[currentRC]={respuestas:{},fotos:{}};
+  respuestas=stateRC[currentRC].respuestas;
+  fotos=stateRC[currentRC].fotos;
   ['inspector','empresa','ubicacion'].forEach(id=>document.getElementById(id).value='');
   const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
   document.getElementById('fechaHora').value=now.toISOString().slice(0,16);
