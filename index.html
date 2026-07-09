@@ -34,11 +34,13 @@
   .progress-bar-fill{height:4px;background:var(--naranja-light);transition:width 0.4s ease;width:0%;}
 
   /* TABS RIESGOS */
-  .rc-tabs{display:flex;gap:6px;padding:10px 12px 0;max-width:480px;margin:0 auto;}
-  .rc-tab{flex:1;padding:10px 6px;border:2px solid var(--gris-borde);border-radius:8px;background:white;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fuente);color:var(--texto-suave);transition:all 0.15s;line-height:1.3;}
+  .rc-tabs{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}
+  .rc-tab{flex:0 0 auto;min-width:96px;padding:9px 12px;border:2px solid var(--gris-borde);border-radius:8px;background:white;font-weight:700;cursor:pointer;font-family:var(--fuente);color:var(--texto-suave);transition:all 0.15s;line-height:1.25;text-align:center;}
   .rc-tab:active{transform:scale(0.97);}
   .rc-tab.activo{background:var(--azul);border-color:var(--azul);color:white;}
-  .sigla-nemo{color:var(--naranja-light);font-weight:900;font-size:14px;}
+  .rc-tab b{font-size:13px;display:block;}
+  .rc-tab span{font-size:10px;font-weight:600;opacity:0.85;display:block;margin-top:1px;}
+  .sigla-nemo{display:inline-block;background:var(--naranja);color:white;font-weight:900;font-size:12px;padding:2px 7px;border-radius:5px;letter-spacing:0.5px;margin-right:6px;vertical-align:middle;white-space:nowrap;}
 
   /* MENÚ OPCIONES */
   .opciones-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;}
@@ -85,10 +87,13 @@
   .seccion-header{padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
   .critico .seccion-header{background:var(--azul);color:white;}
   .preventivo .seccion-header{background:var(--azul-medio);color:white;}
+  .mitigante .seccion-header{background:#2c6e6a;color:white;}
+  .especial .seccion-header{background:#6b46c1;color:white;}
   .seccion-titulo{font-size:13px;font-weight:700;flex:1;line-height:1.3;}
   .seccion-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;white-space:nowrap;}
-  .critico .seccion-badge{background:var(--naranja);color:white;}
   .preventivo .seccion-badge{background:#2563eb;color:white;}
+  .mitigante .seccion-badge{background:#0d9488;color:white;}
+  .especial .seccion-badge{background:#7c3aed;color:white;}
   .chevron{font-size:16px;transition:transform 0.2s;opacity:0.8;}
   .chevron.abierto{transform:rotate(180deg);}
 
@@ -187,7 +192,7 @@
     <div class="logo-badge" id="rcBadge">RC‑21</div>
     <div class="header-title">
       <h1 id="rcTitulo">Trabajo en Altura</h1>
-      <p>COR_Accidente · v.10 · ASIP Antamina</p>
+      <p>Verificación de Riesgos Críticos · v.11 · ASIP Antamina</p>
     </div>
     <div class="header-icons">
       <div class="sync-indicator" id="syncDot" title="Estado de conexión"></div>
@@ -236,7 +241,7 @@
       <div class="opcion-icono" style="background:#dcfce7;">📋</div>
       <div class="opcion-info">
         <div class="opcion-nombre">Verificación de Riesgos Críticos</div>
-        <div class="opcion-desc">RC-21 · RC-12 · v.10 · Estándar ASIP Antamina</div>
+        <div class="opcion-desc">RC-11 al RC-23 · v.11 · Estándar ASIP Antamina</div>
       </div>
     </div>
   </div>
@@ -247,10 +252,7 @@
 </div>
 
 <!-- SELECTOR DE RIESGO CRÍTICO -->
-<div class="rc-tabs">
-  <button class="rc-tab activo" id="tab-RC21" onclick="cambiarRC('RC21')">RC-21<br>Trabajo en Altura</button>
-  <button class="rc-tab" id="tab-RC12" onclick="cambiarRC('RC12')">RC-12<br>Atropello (PECODE-SS)</button>
-</div>
+<div class="rc-tabs" id="rcTabs"></div>
 
 <!-- DATOS DEL INSPECTOR -->
 <div class="form-header">
@@ -299,40 +301,18 @@
 
 <script>
 const RIESGOS={
-RC21:{codigo:'RC-21',nombre:'Trabajo en Altura',controles:[
-  {tipo:'critico',nombre:'Personal competente y autorizado para trabajo en altura',preguntas:[
-    'Solicite a cada trabajador en altura su credencial: ¿Cuenta con aptitud médica vigente (examen ocupacional anual con evaluación de suficiencia médica para altura) y, en el caso del andamiero, certificación vigente ≤24 meses emitida por el representante del fabricante del andamio?',
-    'Pregunte al trabajador: ¿Cómo se siente hoy para trabajar en altura? ¿Tiene algún síntoma de fatiga, malestar, vértigo o mareo? ¿Sabe a quién reportar si durante la tarea se siente sin condiciones?'
-  ]},
-  {tipo:'critico',nombre:'Plan de rescate ante trauma de suspensión (≤10 min ICMM)',preguntas:[
-    'Muéstreme el plan de rescate específico documentado en el PETAR para esta tarea: ¿Identifica brigada activa del turno, kit de rescate disponible en zona (ubicación verificada), tiempo objetivo de respuesta ≤10 min, y frecuencia de radio operativa con el Centro de Control?',
-    'Pregunte a los trabajadores: ¿Cuál es el protocolo ante caída con suspensión de su compañero? ¿Existe evidencia de simulacro de rescate ejecutado en los últimos 6 meses con tiempo real medido y dentro de la meta ≤10 min?'
-  ]},
-  {tipo:'critico',nombre:'Plataformas, superficies de trabajo y sistemas de andamiaje aprobados',preguntas:[
-    '¿La plataforma, andamio o equipo elevador en uso cuenta con permiso de montaje y uso vigente para el turno, con baranda ≥1.20 m íntegra en el 100% del perímetro, travesaño intermedio y rodapié ≥10 cm? Muéstreme el permiso y la tarjeta verde de habilitación.',
-    'Pida al trabajador que ejecute en su presencia la inspección pre-uso de la plataforma/andamio y describa qué hace si detecta un defecto. ¿Demuestra conocimiento del procedimiento "Fuera de Servicio" (etiquetado + no usar + reporte)?'
-  ]},
-  {tipo:'critico',nombre:'Protección colectiva instalada en bordes abiertos y aberturas',preguntas:[
-    '¿Existe restricción efectiva (barricada dura, no cinta de señalización) a 1.80 m del borde en el 100% del perímetro de la zona de trabajo, y todas las aberturas en piso están cubiertas con tapa resistente etiquetada "No retirar"?',
-    'Si una baranda o cubierta debe retirarse para ejecutar la tarea, ¿qué protocolo aplica? Verifique en campo: ¿hay barrera dura instalada y registrada en el Permiso, y se confirma la reposición al cierre del turno?'
-  ]},
-  {tipo:'critico',nombre:'Segregación y control de acceso en zona de trabajo en altura y en zona de exclusión inferior (drop zone)',preguntas:[
-    'Recorra el perímetro superior (zona de trabajo) y el perímetro inferior (drop zone): ¿Ambos están delimitados con barrera dura, señalización "Peligro - Trabajo en Altura" arriba y "Caída de Objetos - No Transitar / Zona de Exclusión" abajo, con radio inferior dimensionado según cálculo de deflexión documentado en el PETAR (referencia: hasta 2× la altura de caída) y una autoridad de zona nominada por nombre en el Permiso para cada perímetro?',
-    'Permanezca 10 minutos en el perímetro inferior (drop zone): ¿Existe vigilante activo controlando el acceso, todo el personal y vehículos respetan el perímetro, y las herramientas/equipos en altura cuentan con sistema de retención secundaria (redes, cubiertas) que evita objetos caídos sobre la zona?'
-  ]},
-  {tipo:'critico',nombre:'Sistema de restricción y detención de caídas certificado (arnés + anclaje + 100% tie off)',preguntas:[
-    'Muéstreme el arnés y línea de vida que está usando. ¿Tiene etiqueta de color cuatrimestral vigente (Rojo: Ene-Abr / Azul: May-Ago / Amarillo: Set-Dic), mosquetones de doble seguro funcionales, cinta anti trauma instalada, y el anclaje certificado ≥22.7 kN (2,270 kgf) identificado en el Permiso?',
-    'Solicite al trabajador que demuestre el principio de 100% tie-off durante un desplazamiento simulado y que explique cómo se calcula la distancia segura de caída para su tarea. ¿Aplica correctamente la doble línea de vida sin desconexión en ningún momento?'
-  ]},
-  {tipo:'preventivo',nombre:'Permiso de trabajo en altura (PETAR) con verificación en campo',preguntas:[
-    'Muéstreme el PETAR vigente para esta tarea: ¿está firmado por Supervisor autorizado, vigente para este turno, con verificación física en campo de los 7 controles críticos (lista de chequeo binaria) y plan de rescate específico documentado?',
-    'Identifique si aplica un cambio de condición ocurrido desde la emisión del PETAR (cambio de clima, alcance, integrante de cuadrilla, herramienta o método). Pida al Supervisor que muestre cómo quedó documentado ese cambio en el Permiso. ¿El PETAR refleja la condición actual o la condición inicial?'
-  ]}
+RC11:{codigo:'RC-11',nombre:'Accidente con explosivos (BCRD-ES)',controles:[
+  {tipo:'critico',sigla:'B',nombre:'Barreras físicas y protocolos de carga en roca reactiva',preguntas:[]},
+  {tipo:'critico',sigla:'C',nombre:'Cumplimiento de requisitos para el almacenamiento y transporte interno de explosivos',preguntas:[]},
+  {tipo:'critico',sigla:'R',nombre:'Restricción de Trabajos en Plataformas Superiores a Malla Cargada',preguntas:[]},
+  {tipo:'critico',sigla:'D',nombre:'Detección y Eliminación de tiros cortados',preguntas:[]},
+  {tipo:'preventivo',sigla:'E',nombre:'Evacuación de área del personal y equipos por voladura (Incluye evacuación por tormentas electricas)',preguntas:[]},
+  {tipo:'preventivo',sigla:'S',nombre:'Segregación y señalización de la zona de voladura',preguntas:[]}
 ]},
-RC12:{codigo:'RC-12',nombre:'Atropello de Personas por Equipos o Vehículos (PECODE-SS)',controles:[
-  {tipo:'critico',sigla:'PE',nombre:'PETAR y Supervisión permanente para actividades de Pit Utilities',preguntas:[
+RC12:{codigo:'RC-12',nombre:'Atropello de personas por equipos o vehículos (PECODE-SS)',controles:[
+  {tipo:'critico',sigla:'PE',nombre:'PETAR y Supervisión permanente para actividades de PIT UTILITIES',preguntas:[
     'Muéstreme el PETAR de la actividad de Pit Utilities en curso y verifique: ¿Está firmado por el K1 (ingeniero colegiado habilitado) antes del inicio del turno?',
-    '¿Tiene el IPERC continuo completado con participación de todo el personal para el turno?',
+    '¿Tiene el IPERC contínuo completado con participación de todo el personal para el turno?',
     '¿El K1 está físicamente presente en la zona de trabajo en este momento?',
     'Solicite al K1 que demuestre qué acción toma si durante la actividad detecta un cambio en las condiciones de la zona. Por ejemplo, un equipo que se aproxima fuera del protocolo o una variación en el área de trabajo. Respuesta esperada: detiene inmediatamente la actividad, retira al personal de la zona, actualiza el IPERC continuo con la nueva condición y no reanuda hasta que las condiciones sean seguras. Criterio de rechazo: K1 no menciona la detención inmediata o la actualización del IPERC ante cambio de condiciones.'
   ]},
@@ -341,33 +321,308 @@ RC12:{codigo:'RC-12',nombre:'Atropello de Personas por Equipos o Vehículos (PEC
     'Pregunte al trabajador en piso: ¿qué hace si no logra establecer contacto con el operador del equipo antes de ingresar a la zona de trabajo?'
   ]},
   {tipo:'critico',sigla:'DE',nombre:'Detención y paralización de operaciones en el área de trabajo',preguntas:[
-    '¿El personal cuenta con los canales y herramientas de comunicación (radios operativos, silbatos, paletas, etc.) para aplicar la detención de actividades y se encuentran asignados de acuerdo con el estándar del área?',
-    'Pregunte al personal de piso u operador: ¿En qué condiciones detiene la operación de forma inmediata? Respuesta esperada: si se pierde contacto visual o radial, si un peatón o equipo ingresa a la zona de segregación sin autorización, ante condiciones climáticas adversas que limiten la visibilidad o si se identifica un peligro no controlado.'
+    '¿Existe confirmación de que los equipos del área de influencia están detenidos o en modo "demora" antes del inicio de la actividad con personal en piso ya sea mediante registro Dispatch, bloqueo físico del equipo o coordinación documentada con el operador, según corresponda al área?',
+    'Pregunte al Supervisor de área: ¿qué hace si durante la actividad un equipo intenta ingresar a la zona donde hay personal en piso?'
   ]},
   {tipo:'critico',sigla:'S',nombre:'Segregación física permanente de zonas peatonales y zonas de operación de equipos',preguntas:[
-    'Verifique en las rutas de tránsito compartidas: ¿Existe segregación física permanente (bermas, muretes de concreto, barandas, etc.) que separe el tránsito peatonal del vehicular/equipos pesados según el diseño del área?',
-    '¿Las estructuras de segregación física se encuentran estables, visibles (señalizadas/pintadas) y sin daños estructurales que comprometan su función?'
+    '¿Las barreras físicas tienen altura = 3/4 de la llanta del equipo mayor del área (mín. 3.00 m en vías de acarreo)?',
+    '¿Existe continuidad sin espacios entre todos los elementos de barrera?',
+    'Pregunte al Supervisor de área: si detecta una brecha en la barrera durante su recorrido de turno, ¿cuál es el procedimiento inmediato? Respuesta esperada: cierre preventivo del tramo, registro fotográfico y comunicación radial con ubicación exacta en el mismo turno. No esperar al turno siguiente.'
   ]},
   {tipo:'critico',sigla:'S',nombre:'Segregación temporal de la zona de trabajo',preguntas:[
-    'En zonas de trabajo temporal, verifique: ¿Se encuentra delimitada y restringida el área mediante elementos temporales (conos con barras, mallas, tranqueras, vallas, etc.) de acuerdo con el estándar y el radio de influencia de los equipos?',
-    '¿La delimitación temporal cuenta con letreros informativos visibles que indiquen el peligro, el nombre del responsable y la autorización requerida para el ingreso?'
+    '¿Existe delimitación física con conos/New Jersey en toda la zona de trabajo con personal en piso, instalada antes del inicio de la actividad? Verifique: ¿Los conos tienen altura ≥ 70 cm con franja reflectiva mínima de 10 cm, y los New Jersey están completamente llenos de agua o arena?',
+    '¿La delimitación es continua sin espacios entre conos?',
+    '¿Hay 0 equipos pesados o auxiliares en movimiento dentro de la zona delimitada?',
+    'Pregunte al Supervisor de área: ¿cuál es la condición para levantar la delimitación al término de la actividad? Respuesta esperada: la delimitación se mantiene hasta confirmar el retiro físico de TODO el personal de la zona, sin excepción. Solo entonces se autoriza el ingreso de equipos. Criterio de rechazo: Supervisor menciona que levanta la delimitación sin verificar el retiro de todo el personal, o delega esa verificación sin confirmación directa.'
+  ]}
+]},
+RC13:{codigo:'RC-13',nombre:'COR_Accidente por caída de rocas (D-E-G-G-I-S-V)',controles:[
+  {tipo:'critico',sigla:'D',nombre:'Diseño geotécnico y evaluación de condiciones de caída de rocas',preguntas:[
+    '¿Los diseños geotécnicos vigentes consideran condiciones reales de caída de rocas (trayectorias, energía, capacidad de catch berms/sistemas de contención) y cubren sectores críticos como tajos, botaderos, stockpiles, carreteras, mineroducto, líneas eléctricas e infraestructura crítica? Verificar conciliaciones diseño–campo y evaluaciones/simulaciones de rockfall actualizadas.',
+    'Seleccionar un cambio geotécnico/operacional reciente o sector con evidencias de caída de rocas: ¿se reevaluaron oportunamente las condiciones, restricciones operativas y capacidad de contención antes de continuar operación/exposición?'
+  ]},
+  {tipo:'critico',sigla:'E',nombre:'Estabilización efectiva de taludes',preguntas:[
+    '¿Los sectores expuestos cuentan con estabilización ejecutada, scaling/limpieza completada y validación geotécnica formal antes de liberar acceso o reiniciar operación?',
+    'Revisar un sector estabilizado recientemente: ¿las recomendaciones geotécnicas fueron implementadas y no existen bloques sueltos, cornisas o material inestable remanente?'
+  ]},
+  {tipo:'critico',sigla:'G',nombre:'Gestión de agua en mina',preguntas:[
+    '¿Los sistemas de drenaje, cunetas, bombeo y control hidráulico se encuentran operativos y existen inspecciones/controles de erosión, infiltración o saturación en sectores críticos?',
+    'Revisar un evento reciente de lluvia/saturación: ¿la condición fue detectada y controlada oportunamente mediante drenaje, restricciones o intervención correctiva antes de afectar estabilidad?'
+  ]},
+  {tipo:'critico',sigla:'G',nombre:'Gestión de exposición a caída de rocas (personas, equipos y terceros)',preguntas:[
+    '¿Las restricciones geotécnicas, cierres, segregación física y controles de acceso están implementados en sectores críticos y el personal conoce condiciones de exposición, TARPs y restricciones vigentes?',
+    'Revisar una activación reciente de restricción/TARP: ¿la evacuación, cierre o segregación se ejecutó oportunamente y no hubo exposición no controlada de personas/equipos?'
+  ]},
+  {tipo:'critico',sigla:'I',nombre:'Implementación y cumplimiento de banquetas de recepción (Catch Berms) y configuración segura de crestas',preguntas:[
+    '¿Las catch berms, trincheras, crestas y geometría de taludes/botaderos cumple criterios definidos de diseño y condición geotécnica, incluyendo limpieza, drenaje y ausencia de degradación crítica?',
+    'En terreno: ¿las desviaciones geométricas, erosión, acumulación de material, pérdida de catch berms o degradación por agua generan restricción, corrección y validación geotécnica antes de continuar operación?'
+  ]},
+  {tipo:'critico',sigla:'S',nombre:'Sistemas de contención de caída de rocas',preguntas:[
+    '¿Las bermas, trincheras, barreras, mallas, shotcrete, anclajes o estructuras de protección cuentan con inspección, mantenimiento y validación técnica vigente conforme al diseño?',
+    'En terreno: ¿los sistemas de contención mantienen continuidad, capacidad funcional y cobertura efectiva frente a caída de rocas, sin brechas críticas o daños no reparados?'
+  ]},
+  {tipo:'critico',sigla:'V',nombre:'Voladura controlada para protección de taludes',preguntas:[
+    '¿Las voladuras en sectores críticos utilizan diseños controlados (precorte/trim/buffer), parámetros definidos de energía y QA/QC de perforación/carguío conforme a criterios geotécnicos?',
+    'Revisar una voladura reciente: ¿el sobrequiebre, daño inducido y generación de bloques sueltos permanecieron dentro de tolerancias y el área fue evaluada geotécnicamente antes de exposición operacional?'
+  ]}
+]},
+RC14:{codigo:'RC-14',nombre:'Incendio o explosión durante trabajos en caliente (CIPSSVV-PUB)',controles:[
+  {tipo:'preventivo',sigla:'C',nombre:'Contención, remoción y/o protección de materiales inflamables y combustibles dentro del área del trabajo en caliente',preguntas:[
+    '¿En la labor inspeccionada se confirma que el 100% de los materiales inflamables (líquidos o gases) han sido retirados fuera del radio de influencia de la tarea?.',
+    '¿Se verifica físicamente que el 100% de los componentes combustibles no removibles (cables, mangueras o caucho) están cubiertos con mantas ignífugas certificadas?.',
+    '¿La medición de atmósfera realizada en el frente de trabajo arroja un valor estricto de 0% de sustancias inflamables (0% LEL) antes de iniciar la ignición?.',
+    '¿El PETAR de la tarea actual cuenta con la firma del supervisor responsable que certifica que el área se encuentra libre de carga combustible mal dispuesta?.'
+  ]},
+  {tipo:'preventivo',sigla:'I',nombre:'Inspección Pre Uso de extintores portátiles',preguntas:[
+    '¿El extintor ubicado en el frente de trabajo cuenta con su registro de inspección de pre-uso diario (GSSL-SINDFR025) debidamente firmado por el turno actual?.'
+  ]},
+  {tipo:'preventivo',sigla:'P',nombre:'Permiso de Trabajo en Caliente',preguntas:[
+    '¿Se evidencia en campo que el 100% de los controles del PETAR están implementados y guardan coherencia con el IPERC Continuo?.',
+    '¿La medición de gases actual realizada por el personal autorizado arroja un valor de 0% de sustancias inflamables (0% LEL)?.',
+    '¿En una muestra (2) de permisos revisados, el 100% de los PETAR son específicos para el componente y válidos solo para el turno?.',
+    '¿El PETAR de la tarea actual se encuentra visible en el lugar de trabajo y cuenta con la validación presencial del supervisor?.'
+  ]},
+  {tipo:'preventivo',sigla:'S',nombre:'Segregación y Señalización Instalada para Trabajos en Caliente',preguntas:[
+    '¿El material combustible no removible dentro del radio de trabajo está cubierto por material ignífugo o protegido por barreras?.',
+    '¿El 100% del trabajo de soldadura observado cuenta con biombos instalados para aislamiento visual y de chispas?.',
+    '¿Se ha utilizado cinta roja de "PELIGRO NO PASE" para delimitar el área y restringir el ingreso de personal ajeno?.',
+    '¿Todos los elementos de delimitación (conos, barras, biombos) estan en perfecto estado físico, limpios y con reflectividad vigente para trabajos nocturnos?.',
+    '¿Durante la inspección se confirma que los extintores están a una distancia no mayor a 3 metros del área segregada?.'
+  ]},
+  {tipo:'preventivo',sigla:'S',nombre:'Sistemas de detección y extinción de fuego en equipos e instalaciones',preguntas:[
+    '¿El panel de control del sistema de detección de la instalación actual se encuentra en estado "Operativo / En Servicio" and sin señales de falla?.',
+    '¿En una muestra de extintores portátiles (muestra=5) del área, el 100% cuenta con la tarjeta de inspección mensual, presión correcta y precinto íntegro?.',
+    '¿El equipo pesado o auxiliar seleccionado (muestra=1) cuenta con su sistema fijo de supresión (AFEX/ANSUL) inspeccionado y con los actuadores manuales accesibles?.',
+    '¿Se confirma en campo que el 100% de los hidrantes y carretes de manguera del área (muestra=2) están libres de obstáculos y listos para su uso?.'
+  ]},
+  {tipo:'preventivo',sigla:'V',nombre:'Verificación de condiciones ambientalmente seguras, ausencia de atmósfera inflamable y materiales combustibles o inflamables',preguntas:[
+    '¿La medición actual realizada en el área de trabajo arroja un valor estricto de 0% de sustancias inflamables (0% LEL)?.',
+    '¿Se verifica físicamente que el 100% del material combustible no removible en un radio de 20 metros está cubierto con mantas ignífugas?.',
+    '¿El extintor ubicado en el punto de trabajo es de PQS ABC de 17 lbs, tiene presión correcta y precinto de seguridad íntegro?.',
+    '¿Se confirma que el 100% de los drenajes y sumideros del área están debidamente sellados antes de generar fuentes de ignición?.',
+    '¿El IPERC Continuo de la tarea actual identifica explícitamente los materiales combustibles presentes en el entorno?.'
+  ]},
+  {tipo:'preventivo',sigla:'V',nombre:'Vigía de fuego durante el trabajo en caliente',preguntas:[
+    '¿Durante la inspección se confirma la presencia permanente del vigía dedicado exclusivamente a la vigilancia sin realizar otras tareas?.',
+    '¿El vigía cuenta con el EPP específico (casco, lentes, guantes, cuero) para permanecer en el radio de proyección de partículas?.',
+    '¿El vigía dispone de un extintor de PQS ABC de mínimo 17 lbs operativo y con inspección vigente?.'
+  ]},
+  {tipo:'mitigante',sigla:'P',nombre:'Plan de preparación y respuesta ante emergencia',preguntas:[
+    '¿En una muestra de tres botiquines del área, se confirma que tienen inspección trimestral y se encuentran correctamente abastecidos?',
+    '¿Durante la inspección se confirma que la Sala de Comando cuenta con todos los medios de comunicación operativos (radio, teléfono, video)?'
+  ]},
+  {tipo:'mitigante',sigla:'U',nombre:'Uso de EPP específico y estandarizado para trabajos en caliente',preguntas:[
+    '¿Durante la inspección (aleatorio) el 100% de los trabajadores porta el kit completo (máscara, guantes, etc)',
+    '¿Se verifica en campo (aleatorio) que el EPP se encuentra en perfecto estado (sin roturas) y libre de contaminantes inflamables?.',
+    '¿Se confirma que el 100% de los trabajadores inspeccionados (aleatorio) realizó su inspección pre-uso de EPP al inicio del turno actual?.',
+    '¿El 100% del área observada donde se realiza soldadura de arco cuenta con pantallas de aislamiento visual instaladas?.'
+  ]},
+  {tipo:'mitigante',sigla:'B',nombre:'Brigadas de respuesta a emergencias (comunicación, equipamiento y competencias)',preguntas:[
+    '¿Los trabajadores disponen de un mecanismo de comunicación operativo (radio, telephone u otro)?',
+    '¿Los trabajadores demuestran conocimiento del procedimiento para la comunicación de emergencias?',
+    '¿Los brigadistas entrevistados en campo demuestran conocimiento práctico de los protocolos de primera respuesta ante emergencias?',
+    '¿El equipamiento de respuesta a emergencias esta disponible, cuenta con la inspección mensual vigente y está operativo?'
+  ]}
+]},
+RC15:{codigo:'RC-15',nombre:'Accidente durante maniobras de izaje (PISCA)',controles:[
+  {tipo:'critico',sigla:'P',nombre:'PETAR y plan de izaje aprobado',preguntas:[
+    '¿Existe un PETAR vigente y firmado por TODOS los responsables (ejecutor, supervisor, área propietaria, vigía cuando aplique) ANTES del inicio de la maniobra, y para izaje crítico, está adjunto el Plan de Izaje validado por el Supervisor Senior de Izaje?',
+    'Solicite al ejecutor que explique 2 controles específicos definidos en su PETAR/Plan de Izaje para esta maniobra (cargas, radios, vientos, exclusión de personal). ¿La respuesta demuestra comprensión real del contenido del documento y no solo cumplimiento formal de la firma?'
+  ]},
+  {tipo:'critico',sigla:'I',nombre:'Integridad y certificación de accesorios de izaje',preguntas:[
+    'Seleccione 2 accesorios en uso en la maniobra (eslinga, grillete, cadena, balancín). ¿Cada uno tiene: (1) certificado vigente y trazable, (2) identificación visible (código/color del trimestre), y (3) coincidencia exacta con lo especificado en el PETAR/Plan de Izaje?',
+    'Solicite al Rigger que aplique en vivo los criterios objetivos de descarte sobre 1 accesorio (cortes, deformaciones, corrosión, hilos rotos, % de desgaste). ¿Demuestra conocimiento de los criterios y verifica que la capacidad de carga del accesorio es suficiente para la carga y el ángulo de izaje específicos de esta maniobra?'
+  ]},
+  {tipo:'critico',sigla:'S',nombre:'Segregación y delimitación de la zona de maniobra',preguntas:[
+    '¿El perímetro de la zona de maniobra está físicamente delimitado de forma continua y completa (sin discontinuidades), con señalización visible desde todos los ángulos de acceso, y el Rigger/Señalero está identificado y posicionado en un punto que cubre toda el área?',
+    'Pregunte al Rigger: ¿cuál es el protocolo exacto si detecta una persona no autorizada acercándose o ingresando al perímetro durante la maniobra, y qué autoridad tiene usted para detener al operador?'
+  ]},
+  {tipo:'critico',sigla:'C',nombre:'Condición mecánica verificada y certificación vigente del equipo de izaje',preguntas:[
+    '¿El equipo de izaje cuenta con: (1) Check List preoperacional del turno con resultado APROBADO firmado por el operador, (2) sticker de PM vigente verificable en SAP, y (3) Certificado MTPE vigente disponible en cabina o documentación del equipo?',
+    'Realice prueba funcional en sitio de los sistemas críticos del equipo: ¿el LMI muestra lectura activa sin error, el limitador de fin de carrera detiene el movimiento al alcanzar el límite, la alarma audible y circulina funcionan, y los frenos responden al test? (donde el sistema esté implementado)'
+  ]},
+  {tipo:'critico',sigla:'A',nombre:'Autorización vigente y competencia verificada (Operador y Rigger)',preguntas:[
+    'Verifique en el sistema de autorizaciones de izajes la Tarjeta Amarilla vigente del operador y del rigger para este equipo y tipo de maniobra específicos. ¿Ambos cuentan simultáneamente con: (1) autorización vigente al equipo correcto, (2) competencia para el tipo de izaje, y (3) declaración de aptitud para el turno?',
+    'Solicite al operador y al rigger que describan 1 escenario de PARO de la maniobra que ellos están autorizados (y obligados) a aplicar sin consultar al supervisor. ¿La respuesta demuestra comprensión de su autoridad para detener la operación y conocimiento de las condiciones límite del Plan de Izaje?'
+  ]}
+]},
+RC16:{codigo:'RC-16',nombre:'Accidente por contacto o liberación de energía peligrosa (MISA)',controles:[
+  {tipo:'critico',sigla:'M',nombre:'Mantenimiento de sistemas y equipos críticos',preguntas:[
+    '¿El equipo crítico a intervenir (cilindros hidráulicos, acumuladores, líneas de alta presión, sistema neumático, eje de chancadora, mangueras, tanques presurizados u otro) figura en la matriz de equipos críticos vigente y tiene Plan de Mantenimiento Preventivo (PM) activo en SAP con órdenes ejecutadas? Muéstreme el PM y la orden de trabajo de hoy.',
+    '¿El equipo cuenta con prueba post-mantenimiento aprobada y registro disponible?',
+    'Si tuvo fallas recientes ¿Existe una investigación con el plan de acción correctiva cerrado? Solicite ver el historial.'
+  ]},
+  {tipo:'critico',sigla:'I',nombre:'Integridad de elementos de control y contención de energía peligrosa',preguntas:[
+    '¿Los elementos de control y contención del equipo a intervenir (válvulas de alivio, accesorios antilatigo, jaulas de seguridad para inflado de llantas, lock valves, bloqueos mecánicos, guardas, sistemas anti-retroceso, soportes mecánicos, cuñas, sistemas bleed-off, pines de seguridad, accesorios de bloqueo u otros) están identificados en la matriz de energías peligrosas, debidamente rotulados en campo y cuentan con PM en SAP?',
+    'Solicite al operador que identifique en campo los elementos de control y contención del equipo y que realice la prueba de funcionamiento o muestre el etiquetado de mantenimiento que indique su operatividad y vigencia. ¿Los elementos están operativos y con etiquetado vigente?'
+  ]},
+  {tipo:'critico',sigla:'S',nombre:'Segregación, señalización, control y/o cierre de acceso',preguntas:[
+    '¿El área de trabajo cuenta con barreras físicas (no solo cinta), señalización visible con actividad, fecha y nombre del supervisor responsable, y acceso cerrado o controlado, con distancia de segregación conforme al tipo de energía?',
+    '¿El letrero identifica al supervisor autorizado para el ingreso?',
+    'Permanezca 5 minutos en el perímetro de la zona segregada: ¿Solo ingresa personal autorizado y el acceso permanece controlado?',
+    'Pregunte al supervisor qué hace ante un ingreso excepcional. ¿Aplica evaluación de riesgo previa al ingreso?'
+  ]},
+  {tipo:'critico',sigla:'A',nombre:'Aislamiento, bloqueo y señalización, disipación de energía residual y verificación de energía cero',preguntas:[
+    '¿El equipo o sistema a intervenir cuenta con la hoja de chequeo de aislamiento y lista de bloqueo de equipos completamente llenado, firmado por el supervisor del trabajo y del área, con todos los puntos de aislamiento bloqueados, señalizados y con verificación de energía cero registrada? Muéstreme el formulario y los puntos de aislamiento rotulados en campo.',
+    'Pida al trabajador que señale en campo cada punto de aislamiento del equipo y que explique el procedimiento ABS aplicado. ¿Demuestra que el equipo está en energía cero y sabe que solo él puede retirar su candado personal?'
+  ]}
+]},
+RC21:{codigo:'RC-21',nombre:'Accidente durante trabajos en altura (5P+2S)',controles:[
+  {tipo:'critico',sigla:'P',nombre:'Permiso de trabajo en altura (PETAR) con verificación en campo',preguntas:[
+    'Muéstreme el PETAR vigente para esta tarea: ¿Está firmado por Supervisor autorizado, vigente para este turno, con verificación física en campo de los 7 controles críticos (lista de chequeo binaria y plan de rescate específico documentado?',
+    'identifique si aplica un cambio de condición ocurrido desde la emisión del PETAR (cambio de clima, alcance, integrante de cuadrilla, herramienta o método). Pida al Supervisor que muestre cómo quedó documentado ese cambio en el Permiso. ¿El PETAR refleja la condición actual o la condición inicial?'
+  ]},
+  {tipo:'critico',sigla:'P',nombre:'Personal competente y autorizado para trabajo en altura',preguntas:[
+    'Solicite a cada trabajador en altura su credencial: ¿Cuenta con aptitud médica vigente (examen ocupacional anual con evaluación de suficiencia médica para altura) y, en el caso del andamiero, certificación vigente ≤24 meses emitida por el representante del fabricante del andamio?',
+    'Pregunte al trabajador: ¿Cómo se siente hoy para trabajar en altura? ¿Tiene algún síntoma de fatiga, malestar, vértigo o mareo? ¿Sabe a quién reportar si durante la tarea se siente sin condiciones?'
+  ]},
+  {tipo:'critico',sigla:'P',nombre:'Plan de rescate ante trauma de suspensión (=10 min ICMM)',preguntas:[
+    'Muéstreme el plan de rescate específico documentado en el PETAR para esta tarea: ¿Identifica brigada activa del turno, kit de rescate disponible en zona (ubicación verificada), tiempo objetivo de respuesta ≤10 min, y frecuencia de radio operativa con el Centro de Control?',
+    'Pregunte a los trabajadores: ¿Cuál es el protocolo ante caída con suspensión de su compañero? ¿Existe evidencia de simulacro de rescate ejecutado en los últimos 6 meses con tiempo real medido y dentro de la meta ≤10 min?'
+  ]},
+  {tipo:'critico',sigla:'P',nombre:'Plataformas, superficies de trabajo y sistemas de andamiaje aprobados',preguntas:[
+    '¿La plataforma, andamio o equipo elevador en uso cuenta con permiso de montaje y uso vigente para el turno, con baranda ≥1.20 m íntegra en el 100% del perímetro, travesaño intermedio y rodapié ≥10 cm? Muéstreme el permiso y la tarjeta verde de habilitación.',
+    'Pida al trabajador que ejecute en su presencia la inspection pre-uso de la plataforma/andamio y describa qué hace si detecta un defectó. ¿Demuestra conocimiento del procedimiento "Fuera de Servicio" (etiquetado + no usar + reporte)?'
+  ]},
+  {tipo:'critico',sigla:'P',nombre:'Protección colectiva instalada en bordes abiertos y aberturas',preguntas:[
+    '¿Existe restricción efectiva (barricada dura, no cinta de señalización) a 1.80 m del borde en el 100% del perímetro de la zona de trabajo, y todas las aberturas en piso están cubiertas con tapa resistente etiquetada "No retirar"?',
+    'Si una baranda o cubierta debe retirarse para ejecutar la tarea, ¿qué protocolo aplica? Verifique en campo: ¿hay barrera dura instalada y registrada en el Permiso, y se confirma la reposición al cierre del turno?'
+  ]},
+  {tipo:'critico',sigla:'S',nombre:'Segregación y control de acceso en zona de trabajo en altura y en zona de exclusión inferior (drop zone)',preguntas:[
+    'Recorra el perímetro superior (zona de trabajo) y el perímetro inferior (drop zone): ¿Ambos están delimitados con barrera dura, señalización Peligro - Trabajo en Altura arriba y Caída de Objetos - No Transitar / Zona de Exclusión abajo, con el radio inferior dimensionado según cálculo de deflexión documentado en el PETAR (referencia: hasta 2× la altura de caída) y una autoridad de zona nominada por nombre en el Permiso para cada perímetro?',
+    'Permanezca 10 minutos en el perímetro inferior (drop zone): ¿Existe vigilante activo controlando el acceso, todo el personal y vehículos respetan el perímetro, y las herramientas/equipos en altura cuentan con sistema de retención secundaria, redes, cubiertas) que evita objetos caídos sobre la zona?'
+  ]},
+  {tipo:'critico',sigla:'S',nombre:'Sistema de restricción y detención de caídas certificado (arnés + anclaje + 100% tie off)',preguntas:[
+    'Muéstreme el arnés y línea de vida que está usando. ¿Tiene etiqueta de color cuatrimestral vigente (Rojo: Ene-Abr / Azul: May-Ago / Amarillo: Set-Dic), mosquetones de doble seguro funcionales, cinta anti trauma instalada, y el anclaje certificado ≥22.7 kN (2,270 kgf) identificado en el Permiso?',
+    'Solicite al trabajador que demuestre el principio de 100% tie-off durante un desplazamiento simulado y que explique cómo se calcula la distancia segura de caída para su tarea. ¿Aplica correctamente la doble línea de vida sin desconexión en ningún momento?'
+  ]}
+]},
+RC22:{codigo:'RC-22',nombre:'Accidente por contacto e interacción con energía eléctrica (ADAHP-EP)',controles:[
+  {tipo:'critico',sigla:'A',nombre:'Acceso controlado y restringido a instalaciones eléctricas',preguntas:[
+    '¿El acceso a salas eléctricas se encuentra controlado y restringido exclusivamente a personal electricista autorizado, y existen letreros visibles que prohíben el ingreso a personas no autorizadas?',
+    '¿Las intervenciones temporales en sistemas energizados o con posibilidad de energización que requieren control de acceso cuentan con barreras y señalización ROJA de PROHIBICIÓN (Zona Restringida) que delimitan el área de riesgo eléctrico?',
+    '¿Las barreras blandas y los letreros utilizados para demarcar temporalmente zonas con riesgo eléctrico se encuentran en buen estado, limpios, visibles y sin deterioro evidente?'
+  ]},
+  {tipo:'critico',sigla:'D',nombre:'Distancia de acercamiento a partes eléctricas energizadas',preguntas:[
+    '¿Conoce el nivel de tensión de la línea eléctrica cercana al área de trabajo?',
+    '¿Conoce las distancias mínimas de seguridad que se requieren para realizar los trabajos cercanos a líneas energizadas?',
+    '¿Se instalaron las barreras/señalizaciones necesarias para evitar el acercamiento a una zona de riesgo por contacto o arco eléctrico?'
+  ]},
+  {tipo:'critico',sigla:'A',nombre:'Aislamiento, bloqueo, señalización y verificación de energía cero',preguntas:[
+    'Antes de iniciar el trabajo, ¿se realizó la verificación de energía residual comprobando la ausencia de tensión en el equipo desenergizado mediante instrumentos de medición adecuados?',
+    '¿Los aislamientos eléctricos de equipos o sistemas que operan con tensiones mayores a 24 V fueron ejecutados únicamente por personal de mantenimiento eléctrico o instrumentación autorizado?',
+    '¿En los aislamientos eléctricos realizados, especialmente en casos de bloqueo grupal o participación de socios estratégicos, se utilizó el formato GSSL – SIND – FR020B (Hoja de Chequeo de Aislamiento Eléctrico y Lista de Puntos de Bloqueo)?',
+    '¿Se verificó que los candados y tarjetas de bloqueo no fueron retirados por una persona distinta a quien los colocó, salvo en casos de retiro forzado debidamente documentados?',
+    '¿Todos los interruptores que alimentan el circuito intervenido se encuentran bloqueados en la posición de apagado antes de iniciar el trabajo?'
+  ]},
+  {tipo:'critico',sigla:'H',nombre:'Herramientas y equipos aislados eléctricamente',preguntas:[
+    '¿El personal inspecciona las herramientas manuales, de poder y equipos antes de cada uso y reporta inmediatamente cualquier anormalidad o deterioro identificado?',
+    '¿Las escaleras utilizadas para trabajar en o cerca de equipos eléctricos son de material no conductivo?',
+    '¿El personal que manipula cables de arrastre o cables energizados utiliza guantes de jebe dieléctricos o herramientas (tenazas/ganchos) con aislamiento?',
+    '¿Las herramientas eléctricas manuales utilizadas están clasificadas y son adecuadas para el nivel de tensión del trabajo que se realiza?',
+    'Cuando corresponde, ¿las herramientas de poder eléctricas cuentan con conexión de puesta a tierra y se encuentran conectadas a enchufes con protección termoeléctrica y contra sobretensión?',
+    '¿Se evidencia que no existen herramientas de mano o de poder en uso con aislamiento dañado, terminales defectuosos o cables en contacto con líquidos conductivos sin la debida protección personal?'
+  ]},
+  {tipo:'critico',sigla:'P',nombre:'Personal entrenado/calificado y autorizado para realizar trabajos con electricidad',preguntas:[
+    '¿Los trabajos eléctricos son ejecutados exclusivamente por personal calificado y autorizado?',
+    '¿El nivel de autorización del personal que ejecuta el trabajo eléctrico corresponde al tipo de trabajo al nivel de tensión intervenido (BT, MT o AT)?',
+    '¿El personal que ejecuta el trabajo eléctrico demuestra conocer los riesgos eléctricos asociados a la tarea y las medidas de control aplicables?',
+    '¿El personal autorizado cumple con los límites de intervención definidos en su autorización, sin ejecutar tareas fuera de su nivel de competencia?',
+    '¿El personal que opera sistemas de suministro de energía eléctrica o que ingresa a salas eléctricas cuenta con autorización formal emitida por el responsable del área eléctrica, acorde al nivel de tensión y tipo de actividad que realiza?'
+  ]},
+  {tipo:'mitigante',sigla:'E',nombre:'EPP específicos (dieléctrico e ignífugo) para trabajos con equipos energizados',preguntas:[
+    '¿El personal que realiza trabajos eléctricos o se encuentra en proximidad de partes energizadas expuestas utiliza EPP dieléctrico e ignífugo acorde a la categoría del trabajo y a la clase de tensión, según el estudio de arco eléctrico vigente?',
+    '¿El trabajador inspecciona visualmente el EPP eléctrico antes de cada uso para verificar la ausencia de daños, deterioro, contaminación o ensayos vencidos?',
+    '¿El EPP eléctrico que presenta aislamiento dañado, deterioro físico, contaminación o ensayos vencidos es retirado inmediatamente de servicio?',
+    'Cuando se utilizan guantes dieléctricos de caucho, ¿se verifica el uso complementario de guantes de cuero para su protección mecánica?'
+  ]},
+  {tipo:'mitigante',sigla:'P',nombre:'Protecciones eléctricas y medición del sistema de puesta a tierra',preguntas:[
+    '¿Los tableros eléctricos portátiles en uso cuentan con dispositivos de protección diferencial operativos y en buen estado?',
+    '¿Los equipos alimentados con energía eléctrica cuentan con conexión a tierra en condiciones operativas adecuadas?',
+    '¿Se evidencia que los dispositivos de protección eléctrica (diferenciales y de sobrecorriente) no han sido alterados, puenteados ni anulados?',
+    '¿Se verifica que todos los componentes inspeccionados (conductores, conexiones, varillas y puntos de unión) se encuentran en buen estado, sin corrosión, daños físicos ni conexiones sueltas?'
+  ]}
+]},
+RC23:{codigo:'RC-23',nombre:'Descarga atmosférica (rayos) y/o trabajos en zonas remotas (CA2SIVER2−PB−U)',controles:[
+  {tipo:'preventivo',sigla:'CA',nombre:'Capacitación del personal en detección visual de tormentas eléctricas, niveles de alerta, uso de refugios y detectores portátiles',preguntas:[
+    '¿En una muestra de 5 trabajadores en áreas expuestas se verifica en el sistema que su certificación está vigente (anual) y aprobada con una nota mínima de 80/100?',
+    '¿Durante la evaluación aleatoria en el frente de trabajo (muestra=3), el personal demuestra conocer el significado de los niveles de alerta y la ubicación del refugio más cercano?',
+    '¿Se evidencia que el 100% de las constancias de capacitación (muestra=10) se encuentran debidamente firmadas y cargadas en el sistema de gestión?',
+    '¿Al verificar el listado de personal del turno (aleatorio), se confirma que existe "Cero" personal nuevo o reingresante operando sin haber recibido la inducción de tormentas eléctricas?'
+  ]},
+  {tipo:'preventivo',sigla:'CA',nombre:'Calibración y mantenimiento de equipos fijos y portátiles',preguntas:[
+    '¿Durante la inspección en campo se confirma que el detector está calibrado, encendido, cargado, sin alarmas de falla y cuenta con batería de reemplazo? En caso de estar inoperativo, ¿cuenta con la tarjeta de "Fuera de Servicio"?',
+    '¿Al revisar 5 checklists de detectores portátiles de la última semana, se evidencia un cumplimiento = 98% en las inspecciones pre-operacionales y verificaciones de calibración?',
+    '¿En el último protocolo de calibración revisado se evidencia que el detector opera con un error de medición dentro de los límites de tolerancia definidos por el fabricante?',
+    '¿Durante la verificación de 3 registros de Dispatch y/o Centro de control del último mes el 100% de las alarmas críticas detectadas por el sistema activaron la notificación de alerta inmediata (Naranja/Roja) a la operación?',
+    '¿Se verifica físicamente que 5 de los registros de calibración y mantenimiento del último semestre se encuentran archivados en el binder del área y registrados en el sistema digital?'
+  ]},
+  {tipo:'preventivo',sigla:'SI',nombre:'Sistema de comunicación radial y protocolos de comunicación',preguntas:[
+    '¿Durante la inspección en el área remota se confirma que el trabajador porta físicamente su radio encendida y sintonizada en el canal geográfico correcto?',
+    '¿Al revisar la lista de chequeo de pre-uso de la unidad (muestra=5), se evidencia que el 100% de las radios portátiles cuentan con batería cargada y señal clara?',
+    '¿Al realizar una prueba aleatoria en campo el botón naranja de emergencia de la radio activa la alerta en el Centro de Control de forma inmediata?',
+    '¿En la inspección inopinada de tránsito se verifica que el conductor cambió su radio al grupo de comunicación correspondiente a su ubicación geográfica actual?',
+    '¿Al revisar el log de communications de las últimas 24 horas, se cumplió con el 100% de los reportes de estado cada 2 horas desde zonas remotas/carreteras?',
+    '¿En el último evento de tormenta registrado, la emisión de la alerta meteorológica se realizó en un tiempo = 5 minutos desde su detección oficial?'
+  ]},
+  {tipo:'preventivo',sigla:'VE',nombre:'Verificación previa de condiciones meteorológicas y operativas',preguntas:[
+    '¿Al inspeccionar una unidad en el punto de salida hacia zona remota se evidencia que el conductor porta el documento GSSL-SVI-FR001 (Permiso y Plan de Viaje) debidamente llenado?',
+    '¿En el formato GSSL-SVI-FR001 seleccionado en campo se evidencia la firma del Supervisor Autorizado validando que el conductor cumplió con el descanso mínimo de 6 horas?',
+    '¿Al verificar el log de comunicaciones del Centro de Control de la última jornada (muestra=2 viajes), se confirma el cumplimiento del 100% de los reportes de estado cada 2 horas durante el trayecto?',
+    '¿Durante la revisión de los registros de tránsito del último periodo de clima adverso (muestra=3 viajes), se evidencia que hubo Cero (0) desplazamientos bajo condiciones de Alerta Roja o visibilidad < 30m?',
+    '¿Al verificar el sistema de monitoreo en tiempo real se confirma que el 100% de las unidades en ruta mantienen los sistemas GPS/IVMS y SAF activos y transmitiendo datos?'
+  ]},
+  {tipo:'preventivo',sigla:'RE',nombre:'Refugios certificados y señalizados en zonas de trabajo expuestas',preguntas:[
+    '¿Durante la inspección en el frente de trabajo se confirma que el refugio está operativo, accesible, con puesta a tierra en buenas condiciones y con señalización de aforo?',
+    '¿Durante la verificación visual se confirma que la estructura no presenta filtraciones de agua y que las puertas mantienen un cierre hermético?',
+    '¿Se verifica físicamente que la ruta de acceso al refugio seleccionado está demarcada, señalizada y libre de cualquier obstáculo?',
+    '¿Se evidencia en la tarjeta de inspección del refugio que las verificaciones mensuales y trimestrales están actualizadas y sin observaciones pendientes?',
+    '¿Al realizar una prueba de funcionamiento los sistemas alternos (aire respirable, iluminación y comunicación) operan con efectividad inmediata?'
+  ]},
+  {tipo:'mitigante',sigla:'B',nombre:'Brigadas de respuesta a emergencias (comunicación, equipamiento y competencias)',preguntas:[
+    '¿Los trabajadores disponen de un mecanismo de comunicación operativo (radio, teléfono u otro)?',
+    '¿Los trabajadores demuestran conocimiento del procedimiento para la comunicación de emergencias?',
+    '¿Los brigadistas entrevistados en campo demuestran conocimiento práctico de los protocolos de primera respuesta ante emergencias?',
+    '¿El equipamiento de respuesta a emergencias esta disponible, cuenta con la inspección mensual vigente y está operativo?'
+  ]},
+  {tipo:'mitigante',sigla:'P',nombre:'Pararrayos en áreas expuestas a descargas atmosféricas',preguntas:[
+    '¿Durante la inspección en el frente de trabajo activo se confirma visualmente que el pararrayos está instalado y operativo para proteger al personal expuesto?',
+    '¿Se verifica en el protocolo de medición del pararrayos seleccionado que el valor de resistencia de puesta a tierra es menor o igual al valor de diseño definido?',
+    '¿En la inspección física del sistema se confirma que los cables de bajada están íntegros (sin desconexiones, sulfatación o daños estructurales)?',
+    '¿Se confirma mediante una revisión en el sistema que 5 protocolos de medición del último periodo han sido cargados correctamente en SAP para su fiscalización?',
+    '¿Se evidencia en el registro de hallazgos que el 100% de las acciones correctivas de la última inspección técnica fueron cerradas en un plazo = 30 días?'
+  ]},
+  {tipo:'especial',sigla:'U',nombre:'Uso de EPP específico en áreas remotas',preguntas:[
+    '¿El 100% del personal observado en zonas remotas utiliza el kit completo de EPP?',
+    '¿Cada trabajador cuenta con su lista de verificación pre-uso debidamente firmada antes de iniciar el desplazamiento a un área remota?',
+    '¿Los EPP detectados con fallas o deteriorados se encuentran inutilizados físicamente para evitar su reuso accidental?',
+    '¿El 100% del personal observado en zonas remotas dispone de radio portátil operativa con batería de reemplazo, dos bastones de montaña regulables y en buen estado, un silbato para localización en casos de emergencia y un botiquín de primeros auxilios?',
+    '¿El personal que realiza trabajos en áreas remotas cuenta con evidencia de uso de bloqueador solar con FPS = 35?'
   ]}
 ]}
 };
-let currentRC='RC21';
+let currentRC=Object.keys(RIESGOS)[0];
 let CONTROLES=RIESGOS[currentRC].controles;
 
 // ── DEFAULTS HARDCODEADOS ─────────────────────────────────────────────────
 const DEFAULT_SHEET_URL    = 'https://script.google.com/macros/s/AKfycby-ZEfH5T3L-x42sEqlV-n0wXEP3qvqc0UMeG17pVpbs7VXPsOo5n1a76Pyqgy08gS3/exec';
 const DEFAULT_DRIVE_FOLDER = '1uXZx_HuQW6Aaz3iS53a8UTv7G3uPUA49';
 
-const stateRC={RC21:{respuestas:{},fotos:{}},RC12:{respuestas:{},fotos:{}}};
+const stateRC={};Object.keys(RIESGOS).forEach(k=>stateRC[k]={respuestas:{},fotos:{}});
 let respuestas=stateRC[currentRC].respuestas;
 let fotos=stateRC[currentRC].fotos;
 const STORAGE_KEY='rc21_historial';
 const CONFIG_KEY='rc21_config';
 
 // ── CAMBIO DE RIESGO CRÍTICO ──────────────────────────────────────────────
+function renderTabs(){
+  const cont=document.getElementById('rcTabs');
+  cont.innerHTML=Object.keys(RIESGOS).map(rc=>{
+    const R=RIESGOS[rc];
+    const corto=R.nombre.length>26?R.nombre.slice(0,24)+'…':R.nombre;
+    return `<button class="rc-tab ${rc===currentRC?'activo':''}" id="tab-${rc}" onclick="cambiarRC('${rc}')"><b>${R.codigo}</b><span>${corto}</span></button>`;
+  }).join('');
+}
 function cambiarRC(rc){
   if(rc===currentRC)return;
   currentRC=rc;
@@ -416,15 +671,22 @@ function guardarConfig(){
 }
 
 // ── RENDER CONTROLES ──────────────────────────────────────────────────────
+const GRUPOS={critico:{label:'Controles Críticos',color:'#E05C00'},preventivo:{label:'Controles Preventivos',color:'#1a4d8f'},mitigante:{label:'Controles Mitigantes',color:'#0d9488'},especial:{label:'Control Especial',color:'#6b46c1'}};
 function renderControles(){
   const container=document.getElementById('controlesContainer');
   container.innerHTML='';
-  const criticos=CONTROLES.filter(c=>c.tipo==='critico');
-  const preventivos=CONTROLES.filter(c=>c.tipo==='preventivo');
-  if(criticos.length)container.innerHTML+=`<div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#E05C00;">● Controles Críticos</div>`;
-  criticos.forEach((ctrl,ci)=>renderControl(container,ctrl,ci));
-  if(preventivos.length)container.innerHTML+=`<div style="margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#1a4d8f;">● Controles Preventivos</div>`;
-  preventivos.forEach((ctrl,pi)=>renderControl(container,ctrl,pi+criticos.length));
+  let tipoActual=null;
+  CONTROLES.forEach((ctrl,idx)=>{
+    if(ctrl.tipo!==tipoActual){
+      tipoActual=ctrl.tipo;
+      const g=GRUPOS[ctrl.tipo]||{label:ctrl.tipo,color:'#5a6378'};
+      const h=document.createElement('div');
+      h.style.cssText=`margin:14px 12px 6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:${g.color};`;
+      h.textContent='● '+g.label;
+      container.appendChild(h);
+    }
+    renderControl(container,ctrl,idx);
+  });
 }
 
 function renderControl(container,ctrl,idx){
@@ -432,9 +694,8 @@ function renderControl(container,ctrl,idx){
   sec.className=`seccion ${ctrl.tipo}`;
   const header=document.createElement('div');
   header.className='seccion-header';
-  const badge=ctrl.tipo==='preventivo'?'<span class="seccion-badge">PREVENTIVO</span>':'';
-  const titulo=ctrl.sigla?`<span class="sigla-nemo">${ctrl.sigla}</span> – ${ctrl.nombre}`:ctrl.nombre;
-  header.innerHTML=`${badge}<span class="seccion-titulo">${titulo}</span><span class="chevron" id="chev-${idx}">▾</span>`;
+  const titulo=ctrl.sigla?`<span class="sigla-nemo">${ctrl.sigla}</span><span class="seccion-titulo">${ctrl.nombre}</span>`:`<span class="seccion-titulo">${ctrl.nombre}</span>`;
+  header.innerHTML=`${titulo}<span class="chevron" id="chev-${idx}">▾</span>`;
   header.onclick=()=>toggleControl(idx);
   const wrap=document.createElement('div');
   wrap.className='preguntas-wrap abierto';
@@ -467,6 +728,12 @@ function renderControl(container,ctrl,idx){
       </div>`;
     wrap.appendChild(item);
   });
+  if(!ctrl.preguntas.length){
+    const vacio=document.createElement('div');
+    vacio.className='pregunta-item';
+    vacio.innerHTML='<div class="pregunta-texto" style="color:var(--texto-suave);font-style:italic;">Sin subcontroles de verificación definidos.</div>';
+    wrap.appendChild(vacio);
+  }
   sec.appendChild(header);
   sec.appendChild(wrap);
   container.appendChild(sec);
@@ -808,7 +1075,9 @@ window.addEventListener('offline',actualizarConexion);
 (function init(){
   const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
   document.getElementById('fechaHora').value=now.toISOString().slice(0,16);
-  cargarConfig();renderControles();actualizarStats();actualizarConexion();renderHistorial();
+  document.getElementById('rcBadge').textContent=RIESGOS[currentRC].codigo.replace('-','‑');
+  document.getElementById('rcTitulo').textContent=RIESGOS[currentRC].nombre;
+  cargarConfig();renderTabs();renderControles();actualizarStats();actualizarConexion();renderHistorial();
 })();
 </script>
 </body>
